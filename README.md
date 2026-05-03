@@ -1,4 +1,4 @@
-# AlumniConnect: Parallel Universe 🌌
+# AlumniConnect
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-teal.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/Build-Stable-brightgreen.svg)]()
