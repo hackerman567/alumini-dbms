@@ -26,7 +26,7 @@ const Polls = () => {
     const fetchPolls = async () => {
         try {
             const res = await client.get('/polls');
-            if (res.data.success) setPolls(res.data.data);
+            if (res.success) setPolls(res.data);
         } catch (err) {
             console.error("Failed to load polls", err);
         } finally {
@@ -64,17 +64,17 @@ const Polls = () => {
         <div className="max-w-7xl mx-auto space-y-20 pb-24 relative">
             <div className="scan-line"></div>
             
-            <div className="flex flex-col md:flex-row justify-between items-end gap-10 quantum-card !p-12 rounded-[4rem] border-4 border-white/5 shadow-2xl bg-black/40">
+            <div className="flex flex-col md:flex-row justify-between items-end gap-4 md:gap-5 quantum-card p-5 md:p-6 rounded-3xl border-4 border-white/5 shadow-2xl bg-black/40">
                 <div className="space-y-6">
-                    <h1 className="text-7xl font-display font-black text-white tracking-tighter flex items-center gap-10 uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                    <h1 className="text-4xl md:text-2xl md:text-3xl font-display font-black text-white tracking-normaler flex items-center gap-4 md:gap-5 uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                         <Vote className="text-[#BF00FF] drop-shadow-[0_0_20px_rgba(191,0,255,0.4)]" size={80} /> COMMUNITY POLLS
                     </h1>
-                    <p className="font-mono text-xl text-[#00FFD1] tracking-widest uppercase font-black">Share your opinion & shape the community network</p>
+                    <p className="font-mono text-xl text-[#00FFD1] tracking-normal uppercase font-black">Share your opinion & shape the community network</p>
                 </div>
                 {(user.role === 'alumni' || user.role === 'admin' || user.role === 'mentor') && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
-                        className="dimension-btn !px-16 !py-6 text-xl font-black uppercase tracking-widest shadow-2xl active:scale-95"
+                        className="dimension-btn !px-16 !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                     >
                         <Plus size={32} className="mr-4" /> CREATE POLL
                     </button>
@@ -82,14 +82,14 @@ const Polls = () => {
             </div>
 
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-40">
-                    <div className="w-20 h-20 portal-ring mb-10 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center py-16 md:py-20">
+                    <div className="w-14 h-14 md:w-16 md:h-16 portal-ring mb-10 flex items-center justify-center">
                         <div className="w-10 h-10 bg-[#00FFD1] rounded-full animate-pulse shadow-[0_0_20px_#00FFD1]"></div>
                     </div>
-                    <span className="font-mono text-base text-[#00FFD1] animate-pulse uppercase tracking-widest font-black">Scanning Network Feedback...</span>
+                    <span className="font-mono text-base text-[#00FFD1] animate-pulse uppercase tracking-normal font-black">Scanning Network Feedback...</span>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:p-8">
                     {polls.map((poll) => (
                         <PollCard key={poll.id} poll={poll} onVote={handleVote} userId={user.id} />
                     ))}
@@ -109,24 +109,24 @@ const Polls = () => {
                             initial={{ scale: 0.9, y: 50 }}
                             animate={{ scale: 1, y: 0 }}
                             exit={{ scale: 0.9, y: 50 }}
-                            className="bg-black border-4 border-white/10 rounded-[4rem] w-full max-w-3xl p-16 relative shadow-[0_0_120px_rgba(191,0,255,0.1)] overflow-hidden"
+                            className="bg-black border-4 border-white/10 rounded-3xl w-full max-w-3xl p-6 md:p-8 relative shadow-[0_0_120px_rgba(191,0,255,0.1)] overflow-hidden"
                         >
                             <div className="scan-line !top-0"></div>
-                            <h2 className="text-5xl font-display font-black text-white mb-12 uppercase tracking-tight">New Community Poll</h2>
+                            <h2 className="text-2xl md:text-3xl font-display font-black text-white mb-5 md:mb-6 uppercase tracking-normal">New Community Poll</h2>
                             <form onSubmit={handleCreatePoll} className="space-y-12 relative z-10">
                                 <div className="space-y-6">
-                                    <label className="block text-xs font-mono text-[#BF00FF] mb-3 uppercase tracking-widest font-black">Question</label>
+                                    <label className="block text-sm font-mono text-[#BF00FF] mb-3 uppercase tracking-normal font-black">Question</label>
                                     <input 
                                         type="text" 
                                         value={question}
                                         onChange={(e) => setQuestion(e.target.value)}
-                                        className="w-full bg-black border-4 border-white/5 rounded-3xl p-8 text-white focus:border-[#BF00FF] transition-all text-2xl font-black uppercase tracking-tight shadow-inner"
+                                        className="w-full bg-black border-4 border-white/5 rounded-3xl p-8 text-white focus:border-[#BF00FF] transition-all text-2xl font-black uppercase tracking-normal shadow-inner"
                                         placeholder="What would you like to ask?"
                                         required
                                     />
                                 </div>
                                 <div className="space-y-8">
-                                    <label className="block text-xs font-mono text-[#BF00FF] mb-3 uppercase tracking-widest font-black">Answer Options</label>
+                                    <label className="block text-sm font-mono text-[#BF00FF] mb-3 uppercase tracking-normal font-black">Answer Options</label>
                                     <div className="space-y-6">
                                         {options.map((opt, i) => (
                                             <input 
@@ -138,7 +138,7 @@ const Polls = () => {
                                                     newOpts[i] = e.target.value;
                                                     setOptions(newOpts);
                                                 }}
-                                                className="w-full bg-black border-4 border-white/5 rounded-[2rem] p-6 text-white focus:border-[#BF00FF] transition-all text-xl font-black uppercase tracking-tight shadow-inner"
+                                                className="w-full bg-black border-4 border-white/5 rounded-xl p-6 text-white focus:border-[#BF00FF] transition-all text-xl font-black uppercase tracking-normal shadow-inner"
                                                 placeholder={`Option ${i+1}`}
                                                 required
                                             />
@@ -147,14 +147,14 @@ const Polls = () => {
                                     <button 
                                         type="button"
                                         onClick={() => setOptions([...options, ''])}
-                                        className="text-sm font-mono text-white/50 hover:text-[#BF00FF] uppercase tracking-widest font-black flex items-center gap-4 mt-6 transition-colors bg-white/5 px-6 py-3 rounded-2xl border-2 border-white/5 shadow-lg"
+                                        className="text-sm font-mono text-white/50 hover:text-[#BF00FF] uppercase tracking-normal font-black flex items-center gap-4 mt-6 transition-colors bg-white/5 px-6 py-3 rounded-2xl border-2 border-white/5 shadow-lg"
                                     >
                                         <Plus size={22} /> Add Another Option
                                     </button>
                                 </div>
-                                <div className="flex gap-10 pt-12">
-                                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-10 py-6 rounded-[2rem] border-4 border-white/5 text-white/30 font-mono text-base uppercase font-black hover:text-white hover:border-white/20 transition-all">Cancel</button>
-                                    <button type="submit" className="flex-1 dimension-btn !py-6 text-xl font-black uppercase tracking-widest shadow-2xl active:scale-95">Create Poll</button>
+                                <div className="flex gap-4 md:gap-5 pt-12">
+                                    <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-10 py-6 rounded-xl border-4 border-white/5 text-white/30 font-mono text-base uppercase font-black hover:text-white hover:border-white/20 transition-all">Cancel</button>
+                                    <button type="submit" className="flex-1 dimension-btn !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95">Create Poll</button>
                                 </div>
                             </form>
                         </motion.div>
@@ -182,22 +182,22 @@ const PollCard = ({ poll, onVote, userId }) => {
         <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            className="quantum-card space-y-16 !p-16 rounded-[4rem] border-2 border-white/5 shadow-2xl transition-all hover:shadow-[0_20px_50px_rgba(191,0,255,0.1)]"
+            className="quantum-card space-y-16 p-6 md:p-8 rounded-3xl border-2 border-white/5 shadow-2xl transition-all hover:shadow-[0_20px_50px_rgba(191,0,255,0.1)]"
         >
-            <div className="flex justify-between items-start gap-10">
+            <div className="flex justify-between items-start gap-4 md:gap-5">
                 <div className="space-y-6">
-                    <h3 className="font-display text-3xl font-black text-white tracking-tight uppercase leading-tight">{poll.question}</h3>
+                    <h3 className="font-display text-3xl font-black text-white tracking-normal uppercase leading-tight">{poll.question}</h3>
                     <div className="flex items-center gap-4">
-                         <p className="font-mono text-xs text-slate-500 uppercase tracking-widest font-black bg-white/5 px-4 py-1.5 rounded-xl border border-white/10">Created by: {poll.creator_name}</p>
-                         <p className="font-mono text-xs text-[#00FFD1] uppercase tracking-widest font-black bg-cyan-500/5 px-4 py-1.5 rounded-xl border border-cyan-500/20">{poll.total_votes} Votes</p>
+                         <p className="font-mono text-sm text-slate-500 uppercase tracking-normal font-black bg-white/5 px-4 py-1.5 rounded-xl border border-white/10">Created by: {poll.creator_name}</p>
+                         <p className="font-mono text-sm text-[#00FFD1] uppercase tracking-normal font-black bg-cyan-500/5 px-4 py-1.5 rounded-xl border border-cyan-500/20">{poll.total_votes} Votes</p>
                     </div>
                 </div>
-                <div className="p-6 rounded-[2rem] bg-slate-900 border-2 border-white/10 text-[#BF00FF] shadow-2xl transition-transform hover:scale-110">
+                <div className="p-6 rounded-xl bg-slate-900 border-2 border-white/10 text-[#BF00FF] shadow-2xl transition-transform hover:scale-110">
                     <BarChart3 size={48} />
                 </div>
             </div>
 
-            <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-5 md:p-6">
                 {/* Options / Voting */}
                 <div className="space-y-6">
                     {results.map((opt, i) => (
@@ -208,9 +208,9 @@ const PollCard = ({ poll, onVote, userId }) => {
                                 onVote(poll.id, opt.id);
                                 setVoted(true);
                             }}
-                            className={`w-full group relative p-8 rounded-[2rem] border-2 transition-all text-left flex items-center justify-between ${voted ? 'border-white/5 bg-white/[0.01] cursor-default' : 'border-white/10 hover:border-[#BF00FF] cursor-pointer hover:bg-purple-500/5 hover:scale-[1.02] active:scale-95 shadow-xl'}`}
+                            className={`w-full group relative p-8 rounded-xl border-2 transition-all text-left flex items-center justify-between ${voted ? 'border-white/5 bg-white/[0.01] cursor-default' : 'border-white/10 hover:border-[#BF00FF] cursor-pointer hover:bg-purple-500/5 hover:scale-[1.02] active:scale-95 shadow-xl'}`}
                         >
-                            <span className={`text-xl font-mono uppercase tracking-widest font-black ${voted && poll.user_voted_option_id === opt.id ? 'text-[#BF00FF]' : 'text-slate-400 group-hover:text-white'}`}>
+                            <span className={`text-xl font-mono uppercase tracking-normal font-black ${voted && poll.user_voted_option_id === opt.id ? 'text-[#BF00FF]' : 'text-slate-400 group-hover:text-white'}`}>
                                 {opt.option_text}
                             </span>
                             <div className="flex items-center gap-6">
@@ -222,7 +222,7 @@ const PollCard = ({ poll, onVote, userId }) => {
                 </div>
 
                 {/* Visualization */}
-                <div className="h-64 quantum-card !p-10 rounded-[3rem] border-2 border-white/5 bg-slate-900/40">
+                <div className="h-64 quantum-card !p-10 rounded-2xl border-2 border-white/5 bg-slate-900/40">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={results} layout="vertical">
                             <XAxis type="number" hide />

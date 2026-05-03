@@ -24,10 +24,10 @@ const Capsule = () => {
         try {
             if (view === 'vault') {
                 const res = await client.get('/capsules');
-                setCapsules(res.data.data);
+                setCapsules(res.data);
             } else {
                 const res = await client.get('/capsules/me');
-                setMyCapsules(res.data.data);
+                setMyCapsules(res.data);
             }
         } catch (err) {
             console.error("Failed to load capsules", err);
@@ -64,39 +64,39 @@ const Capsule = () => {
         <div className="max-w-7xl mx-auto space-y-20 pb-24 relative">
             <div className="scan-line"></div>
             
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-12 mb-20 quantum-card !p-16 rounded-[4rem] border-4 border-white/5 bg-black/40 shadow-2xl">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-5 md:p-6 mb-20 quantum-card p-6 md:p-8 rounded-3xl border-4 border-white/5 bg-black/40 shadow-2xl">
                 <div className="space-y-6">
-                    <h1 className="text-8xl font-display font-black text-white mb-4 flex items-center gap-10 uppercase tracking-tighter leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
+                    <h1 className="text-2xl md:text-3xl md:text-3xl md:text-4xl font-display font-black text-white mb-4 flex items-center gap-4 md:gap-5 uppercase tracking-normaler leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">
                         <Clock className="animate-pulse text-[#00FFD1] drop-shadow-[0_0_20px_rgba(0,255,209,0.5)]" size={80} /> Time Capsule
                     </h1>
                     <p className="text-white/20 font-mono tracking-[0.3em] text-xl font-black uppercase">Archive your collective memory for future generations</p>
                 </div>
                 
-                <div className="flex flex-wrap gap-10 items-center">
-                    <div className="flex p-3 bg-black rounded-[3rem] border-4 border-white/5 shadow-2xl">
+                <div className="flex flex-wrap gap-4 md:gap-5 items-center">
+                    <div className="flex p-3 bg-black rounded-2xl border-4 border-white/5 shadow-2xl">
                         <button 
                             onClick={() => setView('vault')}
-                            className={`font-mono text-sm font-black uppercase px-14 py-6 rounded-[2rem] transition-all tracking-[0.2em] ${view === 'vault' ? 'bg-white text-black shadow-[0_10px_40px_rgba(255,255,255,0.3)] scale-110' : 'text-white/20 hover:text-white'}`}
+                            className={`font-mono text-sm font-black uppercase px-14 py-6 rounded-xl transition-all tracking-normal ${view === 'vault' ? 'bg-white text-black shadow-[0_10px_40px_rgba(255,255,255,0.3)] scale-110' : 'text-white/20 hover:text-white'}`}
                         >
                             Public Vault
                         </button>
                         <button 
                             onClick={() => setView('mine')}
-                            className={`font-mono text-sm font-black uppercase px-14 py-6 rounded-[2rem] transition-all tracking-[0.2em] ${view === 'mine' ? 'bg-[#BF00FF] text-white shadow-[0_10px_40px_rgba(191,0,255,0.3)] scale-110' : 'text-white/20 hover:text-white'}`}
+                            className={`font-mono text-sm font-black uppercase px-14 py-6 rounded-xl transition-all tracking-normal ${view === 'mine' ? 'bg-[#BF00FF] text-white shadow-[0_10px_40px_rgba(191,0,255,0.3)] scale-110' : 'text-white/20 hover:text-white'}`}
                         >
                             My Archive
                         </button>
                     </div>
                     <button 
                         onClick={() => setIsModalOpen(true)}
-                        className="dimension-btn !px-20 !py-8 text-2xl font-black uppercase tracking-widest shadow-2xl active:scale-95"
+                        className="dimension-btn !px-20 !py-8 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                     >
                         <Plus size={40} className="mr-6" /> NEW CAPSULE
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:p-8">
                 <AnimatePresence mode="popLayout">
                     {(view === 'vault' ? capsules : myCapsules).map((capsule) => {
                         const isRevealed = capsule.is_revealed;
@@ -111,17 +111,17 @@ const Capsule = () => {
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 className={`quantum-card group !p-14 flex flex-col rounded-[4.5rem] border-4 transition-all duration-500 shadow-2xl ${!isRevealed ? 'border-dashed border-white/5 bg-black/40 hover:border-white/10' : 'border-[#00FFD1]/20 bg-black/60 hover:border-[#00FFD1]/50 hover:shadow-[0_40px_100px_rgba(0,255,209,0.2)]'}`}
                             >
-                                <div className="flex justify-between items-start mb-16">
-                                    <div className="flex items-center gap-10">
-                                        <div className={`w-24 h-24 rounded-[2.5rem] flex items-center justify-center transition-all duration-700 shadow-2xl ${isRevealed ? 'bg-black text-[#00FFD1] border-4 border-[#00FFD1]/20 shadow-[0_15px_40px_rgba(0,255,209,0.2)] group-hover:scale-110' : 'bg-black text-white/10 border-4 border-white/5'}`}>
+                                <div className="flex justify-between items-start mb-6 md:mb-8">
+                                    <div className="flex items-center gap-4 md:gap-5">
+                                        <div className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center transition-all duration-700 shadow-2xl ${isRevealed ? 'bg-black text-[#00FFD1] border-4 border-[#00FFD1]/20 shadow-[0_15px_40px_rgba(0,255,209,0.2)] group-hover:scale-110' : 'bg-black text-white/10 border-4 border-white/5'}`}>
                                             {isRevealed ? <Unlock size={48} className="drop-shadow-[0_0_15px_#00FFD1]" /> : <Lock size={48} />}
                                         </div>
                                         <div className="space-y-4">
-                                            <h3 className="font-display font-black tracking-tight text-4xl text-white uppercase leading-none group-hover:text-[#00FFD1] transition-colors">
+                                            <h3 className="font-display font-black tracking-normal text-4xl text-white uppercase leading-none group-hover:text-[#00FFD1] transition-colors">
                                                 {isRevealed ? capsule.title : 'ARCHIVE_LOCKED'}
                                             </h3>
                                             <div className="flex flex-wrap gap-4">
-                                                 <p className="text-[10px] font-mono text-white/20 uppercase font-black tracking-[0.2em] bg-white/5 px-4 py-2 rounded-xl border-2 border-white/5">
+                                                 <p className="text-sm font-mono text-white/20 uppercase font-black tracking-normal bg-white/5 px-4 py-2 rounded-xl border-2 border-white/5">
                                                     {view === 'vault' ? `FROM: ${capsule.author_name}` : `UNLOCKS: ${new Date(capsule.unlock_date).toLocaleDateString()}`}
                                                 </p>
                                             </div>
@@ -129,23 +129,23 @@ const Capsule = () => {
                                     </div>
                                 </div>
 
-                                <div className="flex-1 min-h-[260px] relative flex items-center justify-center border-4 border-white/5 rounded-[3.5rem] bg-black/50 overflow-hidden mb-16 transition-all group-hover:border-white/10 shadow-inner group-hover:bg-black/20">
+                                <div className="flex-1 min-h-[260px] relative flex items-center justify-center border-4 border-white/5 rounded-3xl bg-black/50 overflow-hidden mb-6 md:mb-8 transition-all group-hover:border-white/10 shadow-inner group-hover:bg-black/20">
                                     {isRevealed ? (
-                                        <p className="p-12 text-3xl font-black uppercase tracking-tight text-white leading-tight text-center italic drop-shadow-xl">"{capsule.body}"</p>
+                                        <p className="p-5 md:p-6 text-3xl font-black uppercase tracking-normal text-white leading-tight text-center italic drop-shadow-xl">"{capsule.body}"</p>
                                     ) : (
-                                        <div className="text-center p-12 space-y-10">
+                                        <div className="text-center p-5 md:p-6 space-y-10">
                                             <div className="flex justify-center">
                                                 <div className="w-16 h-16 portal-ring flex items-center justify-center">
                                                     <div className="w-6 h-6 bg-[#BF00FF] rounded-full animate-pulse shadow-[0_0_20px_#BF00FF]"></div>
                                                 </div>
                                             </div>
-                                            <p className="font-mono text-xs text-[#BF00FF] tracking-[0.4em] font-black uppercase">TEMPORAL_LOCK</p>
-                                            <p className="font-display text-5xl text-white font-black tracking-widest tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{timeLeft}</p>
+                                            <p className="font-mono text-sm text-[#BF00FF] tracking-[0.4em] font-black uppercase">TEMPORAL_LOCK</p>
+                                            <p className="font-display text-2xl md:text-3xl text-white font-black tracking-normal tabular-nums drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">{timeLeft}</p>
                                         </div>
                                     )}
                                 </div>
 
-                                <div className="flex justify-between items-center text-xs font-mono text-white/10 font-black uppercase tracking-[0.3em] pt-12 border-t-4 border-white/5">
+                                <div className="flex justify-between items-center text-sm font-mono text-white/10 font-black uppercase tracking-[0.3em] pt-12 border-t-4 border-white/5">
                                     <span>TIMESTAMP: {new Date(capsule.created_at).toLocaleDateString()}</span>
                                     {isRevealed && <span className="text-[#00FFD1] bg-black px-6 py-3 rounded-2xl border-4 border-[#00FFD1]/20 shadow-2xl">VERIFIED_REVEAL</span>}
                                 </div>
@@ -162,7 +162,7 @@ const Capsule = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/98 backdrop-blur-3xl z-[100] flex items-center justify-center p-12 overflow-y-auto"
+                        className="fixed inset-0 bg-black/98 backdrop-blur-3xl z-[100] flex items-center justify-center p-5 md:p-6 overflow-y-auto"
                     >
                         <motion.div 
                             initial={{ scale: 0.9, y: 100 }}
@@ -175,12 +175,12 @@ const Capsule = () => {
                                 
                                 <button 
                                     onClick={() => setIsModalOpen(false)}
-                                    className="absolute top-16 right-16 text-white/10 hover:text-white transition-all hover:scale-125 active:scale-95"
+                                    className="absolute top-6 md:p-8 right-16 text-white/10 hover:text-white transition-all hover:scale-125 active:scale-95"
                                 >
                                     <Plus className="rotate-45" size={64} />
                                 </button>
                                 
-                                <h2 className="text-7xl font-display font-black text-white mb-10 uppercase tracking-tighter flex items-center gap-10 leading-none">
+                                <h2 className="text-4xl md:text-2xl md:text-3xl font-display font-black text-white mb-10 uppercase tracking-normaler flex items-center gap-4 md:gap-5 leading-none">
                                     <Shield className="text-[#00FFD1] drop-shadow-[0_0_25px_#00FFD1]" size={80} />
                                     SEAL CAPSULE
                                 </h2>
@@ -188,46 +188,46 @@ const Capsule = () => {
 
                                 <form onSubmit={handleSeal} className="space-y-16">
                                     <div className="space-y-8 group">
-                                        <label className="block text-xs font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Archive Identifier</label>
+                                        <label className="block text-sm font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Archive Identifier</label>
                                         <input 
                                             type="text" 
                                             required
                                             value={title}
                                             onChange={(e) => setTitle(e.target.value)}
-                                            className="w-full bg-black border-4 border-white/5 rounded-[3rem] p-10 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-4xl font-black uppercase tracking-tight shadow-inner placeholder:text-white/5"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl p-10 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-4xl font-black uppercase tracking-normal shadow-inner placeholder:text-white/5"
                                             placeholder="ARCHIVE_TITLE"
                                         />
                                     </div>
                                     
                                     <div className="space-y-8 group">
-                                        <label className="block text-xs font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Collective Memory Content</label>
+                                        <label className="block text-sm font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Collective Memory Content</label>
                                         <textarea 
                                             required
                                             value={body}
                                             onChange={(e) => setBody(e.target.value)}
                                             rows="5"
-                                            className="w-full bg-black border-4 border-white/5 rounded-[4rem] p-12 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-3xl font-black uppercase tracking-tight leading-tight shadow-inner placeholder:text-white/5 resize-none"
+                                            className="w-full bg-black border-4 border-white/5 rounded-3xl p-5 md:p-6 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-3xl font-black uppercase tracking-normal leading-tight shadow-inner placeholder:text-white/5 resize-none"
                                             placeholder="ARCHIVE_DATA_PAYLOAD..."
                                         ></textarea>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-8">
                                         <div className="space-y-8 group">
-                                            <label className="block text-xs font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Reveal Timestamp</label>
+                                            <label className="block text-sm font-mono text-white/20 group-focus-within:text-[#00FFD1] transition-colors mb-4 uppercase tracking-[0.4em] font-black ml-4">Reveal Timestamp</label>
                                             <input 
                                                 type="date" 
                                                 required
                                                 value={unlockDate}
                                                 onChange={(e) => setUnlockDate(e.target.value)}
                                                 min={new Date(Date.now() + 86400000).toISOString().split('T')[0]}
-                                                className="w-full bg-black border-4 border-white/5 rounded-[3rem] p-10 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-3xl font-black [color-scheme:dark] shadow-inner"
+                                                className="w-full bg-black border-4 border-white/5 rounded-2xl p-10 text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all text-3xl font-black [color-scheme:dark] shadow-inner"
                                             />
                                         </div>
                                         
                                         <div className="flex items-end pb-2">
                                             <button 
                                                 type="submit"
-                                                className="dimension-btn w-full !py-10 !rounded-[3rem] flex items-center justify-center gap-8 text-3xl font-black uppercase tracking-widest shadow-2xl active:scale-95"
+                                                className="dimension-btn w-full !py-10 !rounded-2xl flex items-center justify-center gap-8 text-3xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                                             >
                                                 <Send size={40} /> SEAL ARCHIVE
                                             </button>

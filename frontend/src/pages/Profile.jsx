@@ -21,8 +21,8 @@ const Profile = () => {
         const fetchAchievements = async () => {
             try {
                 const res = await client.get('/achievements/me');
-                if (res.data.success) {
-                    setAchievements(res.data.data);
+                if (res.success) {
+                    setAchievements(res.data);
                     setAllBadges(res.data.all_badges);
                 }
             } catch (err) {
@@ -57,7 +57,7 @@ const Profile = () => {
             const res = await client.put('/users/profile/update', formData);
             if (res.data.success) {
                 const fresh = await client.get('/users/profile/me');
-                updateProfile(fresh.data.data);
+                updateProfile(fresh.data);
                 setIsEditing(false);
             }
         } catch (err) {
@@ -72,11 +72,11 @@ const Profile = () => {
             <div className="scan-line"></div>
             
             {/* Profile Header */}
-            <header className="relative quantum-card !p-0 overflow-hidden border-4 border-white/5 bg-black/40 rounded-[4rem] shadow-2xl">
-                <div className="p-16 flex flex-col md:flex-row items-center gap-16 relative z-10">
+            <header className="relative quantum-card !p-0 overflow-hidden border-4 border-white/5 bg-black/40 rounded-3xl shadow-2xl">
+                <div className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 md:p-8 relative z-10">
                     {/* Avatar Selection */}
                     <div className="relative group">
-                        <div className="w-56 h-56 rounded-[3rem] p-1.5 bg-gradient-to-tr from-[#00FFD1] via-[#BF00FF] to-[#00FFD1] shadow-2xl transition-transform duration-500 hover:rotate-2">
+                        <div className="w-56 h-56 rounded-2xl p-1.5 bg-gradient-to-tr from-[#00FFD1] via-[#BF00FF] to-[#00FFD1] shadow-2xl transition-transform duration-500 hover:rotate-2">
                             <div className="w-full h-full rounded-[2.8rem] bg-black overflow-hidden flex items-center justify-center relative">
                                 {user.avatar_url ? (
                                     <img 
@@ -85,18 +85,18 @@ const Profile = () => {
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                     />
                                 ) : (
-                                    <span className="font-display text-8xl font-black text-white opacity-10">{user.name.charAt(0)}</span>
+                                    <span className="font-display text-2xl md:text-3xl md:text-3xl md:text-4xl font-black text-white opacity-10">{user.name.charAt(0)}</span>
                                 )}
                                 
                                 <label className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer backdrop-blur-xl">
                                     <Camera size={48} className="text-[#00FFD1] mb-4" />
-                                    <span className="font-mono text-xs text-white font-black uppercase tracking-widest">{uploading ? 'UPLOADING...' : 'CHANGE PHOTO'}</span>
+                                    <span className="font-mono text-sm text-white font-black uppercase tracking-normal">{uploading ? 'UPLOADING...' : 'CHANGE PHOTO'}</span>
                                     <input type="file" className="hidden" onChange={handleAvatarUpload} />
                                 </label>
                             </div>
                         </div>
                         {uploading && (
-                            <div className="absolute -inset-3 border-4 border-[#00FFD1] border-t-transparent rounded-[4rem] animate-spin"></div>
+                            <div className="absolute -inset-3 border-4 border-[#00FFD1] border-t-transparent rounded-3xl animate-spin"></div>
                         )}
                     </div>
 
@@ -105,24 +105,24 @@ const Profile = () => {
                             <motion.div 
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-cyan-500/5 border-2 border-white/5 font-mono text-xs text-[#00FFD1] tracking-widest uppercase font-black"
+                                className="inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-cyan-500/5 border-2 border-white/5 font-mono text-sm text-[#00FFD1] tracking-normal uppercase font-black"
                             >
                                 <Shield size={16} /> VERIFIED ACCOUNT
                             </motion.div>
                             <motion.h1 
                                 initial={{ opacity: 0, x: -30 }}
                                 animate={{ opacity: 1, x: 0 }}
-                                className="text-8xl font-display font-black text-white leading-none tracking-tighter uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
+                                className="text-2xl md:text-3xl md:text-3xl md:text-4xl font-display font-black text-white leading-none tracking-normaler uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                             >
                                 {user.name}
                             </motion.h1>
                         </div>
 
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-8">
-                            <span className="px-8 py-3 rounded-2xl bg-[#BF00FF]/10 border-2 border-[#BF00FF]/30 font-mono text-sm text-[#BF00FF] font-black uppercase tracking-widest shadow-lg">
+                            <span className="px-8 py-3 rounded-2xl bg-[#BF00FF]/10 border-2 border-[#BF00FF]/30 font-mono text-sm text-[#BF00FF] font-black uppercase tracking-normal shadow-lg">
                                 {user.role}
                             </span>
-                            <span className="font-mono text-xl text-white/40 flex items-center gap-4 font-black uppercase tracking-tight">
+                            <span className="font-mono text-xl text-white/40 flex items-center gap-4 font-black uppercase tracking-normal">
                                 <GraduationCap size={28} className="text-white/20" />
                                 BATCH: {user.graduation_year || user.enrollment_year} • {user.department}
                             </span>
@@ -132,14 +132,14 @@ const Profile = () => {
                     <div className="flex flex-col gap-8">
                         <button 
                             onClick={() => setIsEditing(!isEditing)}
-                            className={`dimension-btn ${isEditing ? '!border-red-500/40 !text-red-500' : ''} !px-16 !py-6 text-xl font-black uppercase tracking-widest shadow-2xl active:scale-95`}
+                            className={`dimension-btn ${isEditing ? '!border-red-500/40 !text-red-500' : ''} !px-16 !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95`}
                         >
                             {isEditing ? 'CANCEL' : 'EDIT PROFILE'}
                         </button>
                     </div>
                 </div>
 
-                <div className="absolute right-0 bottom-0 p-16 opacity-5 rotate-12">
+                <div className="absolute right-0 bottom-0 p-6 md:p-8 opacity-5 rotate-12">
                     <Activity size={320} strokeWidth={0.5} className="text-white" />
                 </div>
             </header>
@@ -152,9 +152,9 @@ const Profile = () => {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         onSubmit={handleSave}
-                        className="quantum-card space-y-16 !p-16 rounded-[4rem] border-4 border-white/5 shadow-2xl bg-black/40"
+                        className="quantum-card space-y-16 p-6 md:p-8 rounded-3xl border-4 border-white/5 shadow-2xl bg-black/40"
                     >
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-8">
                             <div className="space-y-12">
                                 <InputField label="FULL NAME" icon={<User />} value={formData.name} onChange={(val) => setFormData({...formData, name: val})} />
                                 <InputField label="EMAIL ADDRESS" icon={<Mail />} value={formData.email} onChange={(val) => setFormData({...formData, email: val})} />
@@ -169,7 +169,7 @@ const Profile = () => {
                             <button 
                                 type="submit" 
                                 disabled={loading}
-                                className="dimension-btn w-full !py-8 gap-8 text-2xl font-black uppercase tracking-widest shadow-2xl active:scale-95"
+                                className="dimension-btn w-full !py-8 gap-8 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                             >
                                 {loading ? (
                                     <>
@@ -192,11 +192,11 @@ const Profile = () => {
                         key="view"
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-1 lg:grid-cols-12 gap-12"
+                        className="grid grid-cols-1 lg:grid-cols-12 gap-5 md:p-6"
                     >
                         <div className="lg:col-span-4 space-y-12">
-                            <section className="quantum-card !p-12 rounded-[3.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
-                                <h3 className="font-mono text-xs text-white/20 uppercase tracking-widest mb-12 font-black">Social Connections</h3>
+                            <section className="quantum-card p-5 md:p-6 rounded-3xl border-4 border-white/5 shadow-2xl bg-black/40">
+                                <h3 className="font-mono text-sm text-white/20 uppercase tracking-normal mb-5 md:mb-6 font-black">Social Connections</h3>
                                 <div className="space-y-10">
                                     <SocialLink icon={<Globe />} label="Website" value="praveen.me" color="#00FFD1" />
                                     <SocialLink icon={<Github />} label="GitHub" value="github.com/praveen" color="#ffffff" />
@@ -204,10 +204,10 @@ const Profile = () => {
                                 </div>
                             </section>
 
-                            <section className="quantum-card bg-cyan-500/5 border-4 border-white/5 !p-12 rounded-[3.5rem] shadow-2xl">
-                                <h3 className="font-display text-xs font-black text-[#00FFD1] uppercase tracking-widest mb-8">Profile Strength</h3>
+                            <section className="quantum-card bg-cyan-500/5 border-4 border-white/5 p-5 md:p-6 rounded-3xl shadow-2xl">
+                                <h3 className="font-display text-sm font-black text-[#00FFD1] uppercase tracking-normal mb-8">Profile Strength</h3>
                                 <div className="flex items-end gap-4">
-                                    <div className="text-7xl font-display font-black text-white leading-none">98.4</div>
+                                    <div className="text-4xl md:text-2xl md:text-3xl font-display font-black text-white leading-none">98.4</div>
                                     <div className="font-mono text-2xl text-[#00FFD1] mb-2 font-black">%</div>
                                 </div>
                                 <div className="mt-10 w-full h-5 bg-black border-4 border-white/5 rounded-full overflow-hidden p-1 shadow-inner">
@@ -217,9 +217,9 @@ const Profile = () => {
                         </div>
 
                         <div className="lg:col-span-8 space-y-12">
-                            <section className="quantum-card !p-16 rounded-[4.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
-                                <h3 className="font-mono text-xs text-white/20 uppercase tracking-widest mb-16 font-black">Account Overview</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                            <section className="quantum-card p-6 md:p-8 rounded-[4.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
+                                <h3 className="font-mono text-sm text-white/20 uppercase tracking-normal mb-6 md:mb-8 font-black">Account Overview</h3>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-8">
                                     <SpecItem label="Display Name" value={user.name} />
                                     <SpecItem label="Primary Email" value={user.email} />
                                     <SpecItem label="Stream & Batch" value={`${user.department} • Class of ${user.graduation_year || user.enrollment_year}`} />
@@ -229,16 +229,16 @@ const Profile = () => {
                                 </div>
                             </section>
 
-                            <section className="quantum-card !p-16 rounded-[4.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
-                                <div className="flex justify-between items-center mb-16">
+                            <section className="quantum-card p-6 md:p-8 rounded-[4.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
+                                <div className="flex justify-between items-center mb-6 md:mb-8">
                                     <div className="space-y-4">
-                                        <h3 className="font-display text-4xl font-black text-white uppercase tracking-tight leading-none group-hover:text-[#00FFD1] transition-colors">Platform Badges</h3>
-                                        <p className="font-mono text-xs text-white/20 uppercase tracking-[0.2em] font-black">Your community milestones</p>
+                                        <h3 className="font-display text-4xl font-black text-white uppercase tracking-normal leading-none group-hover:text-[#00FFD1] transition-colors">Platform Badges</h3>
+                                        <p className="font-mono text-sm text-white/20 uppercase tracking-normal font-black">Your community milestones</p>
                                     </div>
                                     <div className="px-8 py-3 rounded-2xl bg-cyan-500/5 border-4 border-white/5 font-mono text-2xl text-[#00FFD1] font-black shadow-xl">{achievements.length} / {allBadges.length}</div>
                                 </div>
                                 
-                                <div className="grid grid-cols-3 md:grid-cols-5 gap-16">
+                                <div className="grid grid-cols-3 md:grid-cols-5 gap-6 md:p-8">
                                     {allBadges.map((badge) => {
                                         const isUnlocked = achievements.some(a => a.badge_key === badge.key);
                                         return (
@@ -249,13 +249,13 @@ const Profile = () => {
                                                         <Zap size={40} className={isUnlocked ? 'text-[#00FFD1] drop-shadow-[0_0_10px_#00FFD1]' : 'text-white/10'} />
                                                     </div>
                                                 </div>
-                                                <span className={`mt-8 font-mono text-[11px] font-black uppercase tracking-widest text-center ${isUnlocked ? 'text-white/40' : 'text-white/10'}`}>
+                                                <span className={`mt-8 font-mono text-sm font-black uppercase tracking-normal text-center ${isUnlocked ? 'text-white/40' : 'text-white/10'}`}>
                                                     {isUnlocked ? badge.name : 'LOCKED'}
                                                 </span>
 
-                                                <div className="absolute bottom-full mb-8 w-72 p-10 quantum-card opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 scale-90 group-hover:scale-100 border-4 border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] rounded-[2.5rem] bg-black backdrop-blur-xl">
-                                                    <div className="text-sm font-black text-[#00FFD1] mb-4 uppercase tracking-widest">{isUnlocked ? badge.name : 'HIDDEN'}</div>
-                                                    <p className="text-xs text-white/40 font-black font-mono uppercase tracking-tighter leading-relaxed">{isUnlocked ? badge.desc : 'Continue contributing to unlock this badge.'}</p>
+                                                <div className="absolute bottom-full mb-8 w-72 p-10 quantum-card opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 scale-90 group-hover:scale-100 border-4 border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] rounded-2xl bg-black backdrop-blur-xl">
+                                                    <div className="text-sm font-black text-[#00FFD1] mb-4 uppercase tracking-normal">{isUnlocked ? badge.name : 'HIDDEN'}</div>
+                                                    <p className="text-sm text-white/40 font-black font-mono uppercase tracking-normaler leading-relaxed">{isUnlocked ? badge.desc : 'Continue contributing to unlock this badge.'}</p>
                                                 </div>
                                             </div>
                                         );
@@ -272,13 +272,13 @@ const Profile = () => {
 
 const InputField = ({ label, icon, value, placeholder, onChange }) => (
     <div className="space-y-4 group">
-        <label className="font-mono text-xs text-white/20 uppercase tracking-[0.4em] font-black group-focus-within:text-[#00FFD1] transition-colors">{label}</label>
+        <label className="font-mono text-sm text-white/20 uppercase tracking-[0.4em] font-black group-focus-within:text-[#00FFD1] transition-colors">{label}</label>
         <div className="relative">
             <div className="absolute left-8 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-[#00FFD1] transition-all group-focus-within:scale-110">
                 {React.cloneElement(icon, { size: 28 })}
             </div>
             <input 
-                className="w-full bg-black border-4 border-white/5 rounded-[2rem] py-8 pl-24 pr-10 text-xl text-white font-black uppercase tracking-tight focus:border-[#00FFD1]/30 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                className="w-full bg-black border-4 border-white/5 rounded-xl py-8 pl-24 pr-10 text-xl text-white font-black uppercase tracking-normal focus:border-[#00FFD1]/30 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                 value={value}
                 placeholder={placeholder}
                 onChange={(e) => onChange(e.target.value)}
@@ -289,8 +289,8 @@ const InputField = ({ label, icon, value, placeholder, onChange }) => (
 
 const SpecItem = ({ label, value }) => (
     <div className="group space-y-4">
-        <div className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black group-hover:text-[#BF00FF] transition-colors">{label}</div>
-        <div className="text-white font-display text-3xl font-black group-hover:translate-x-3 transition-transform duration-500 uppercase tracking-tight group-hover:text-[#00FFD1]">{value}</div>
+        <div className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black group-hover:text-[#BF00FF] transition-colors">{label}</div>
+        <div className="text-white font-display text-3xl font-black group-hover:translate-x-3 transition-transform duration-500 uppercase tracking-normal group-hover:text-[#00FFD1]">{value}</div>
     </div>
 );
 
@@ -300,8 +300,8 @@ const SocialLink = ({ icon, label, value, color }) => (
             {React.cloneElement(icon, { size: 32 })}
         </div>
         <div className="space-y-1">
-            <div className="font-mono text-[10px] text-white/20 uppercase tracking-[0.3em] font-black">{label}</div>
-            <div className="text-xl text-white/40 group-hover:text-white transition-colors font-black font-mono uppercase tracking-tighter">{value}</div>
+            <div className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black">{label}</div>
+            <div className="text-xl text-white/40 group-hover:text-white transition-colors font-black font-mono uppercase tracking-normaler">{value}</div>
         </div>
     </div>
 );

@@ -48,3 +48,32 @@ INSERT INTO achievements (user_id, badge_key, badge_name, badge_desc) VALUES
 (5, 'TIMELINE_ANCHOR', 'Timeline Anchor', 'Completed your profile to 100%.'),
 (7, 'SIGNAL_MASTER', 'Signal Master', 'Sent 10 mentorship requests.'),
 (8, 'VOID_EXPLORER', 'Void Explorer', 'Logged in 30 days straight.');
+
+-- Polls & Options
+INSERT INTO polls (id, creator_id, question, ends_at) VALUES 
+(1, 1, 'Should we organize a virtual hackathon next month?', '2026-12-31 23:59:59'),
+(2, 6, 'What technology should we focus on for the next webinar?', '2026-12-31 23:59:59');
+
+INSERT INTO poll_options (poll_id, option_text) VALUES 
+(1, 'Yes, absolutely!'), (1, 'No, maybe next semester.'),
+(2, 'React & Next.js'), (2, 'Machine Learning & AI'), (2, 'Cybersecurity Basics');
+
+-- Time Capsules
+INSERT INTO capsules (creator_id, title, message, unlock_date, is_public, is_revealed) VALUES 
+(3, 'To the Batch of 2030', 'Always keep learning and adapting. The tech world moves fast!', '2030-01-01 00:00:00', true, false),
+(7, 'My Freshman Year', 'Survived the first year! Hoping to get a great internship soon.', '2028-06-01 00:00:00', true, false);
+
+-- Mentorship Requests
+INSERT INTO mentorship_requests (student_id, alumni_id, message, status) VALUES 
+(7, 3, 'Hi Sarah, Id love to get your advice on becoming a Full Stack Developer.', 'pending'),
+(8, 4, 'Hello David, your career in manufacturing is inspiring. Can we chat?', 'accepted');
+
+-- Messages
+INSERT INTO messages (sender_id, receiver_id, subject, body) VALUES 
+(3, 7, 'Re: Mentorship', 'Hi Alice! Sure, I would love to chat. Let us schedule a call next week.'),
+(1, 8, 'Welcome to the platform', 'Hello Bob, welcome to AlumniConnect! Explore the job board for opportunities.');
+
+-- Notifications
+INSERT INTO notifications (user_id, type, title, body) VALUES 
+(7, 'mentorship', 'Mentorship Accepted', 'Sarah Jenkins has accepted your mentorship request.'),
+(3, 'system', 'Profile Verified', 'Your alumni profile has been verified by the administrator.');

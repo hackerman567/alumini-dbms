@@ -45,10 +45,10 @@ const Sidebar = () => {
                         <div className="w-full h-full rounded-xl bg-[#00000A] flex items-center justify-center font-display font-black text-[#00FFD1] text-lg">AC</div>
                     </div>
                     <div>
-                        <h1 className="font-display text-xl font-black tracking-tight text-white uppercase leading-none">Alumni <br/><span className="text-[#00FFD1]">Connect</span></h1>
+                        <h1 className="font-display text-xl font-black tracking-normal text-white uppercase leading-none">Alumni <br/><span className="text-[#00FFD1]">Connect</span></h1>
                         <div className="flex items-center gap-2 mt-2">
                             <span className="w-2 h-2 rounded-full bg-[#00FFD1] animate-pulse"></span>
-                            <span className="font-mono text-[10px] text-slate-500 uppercase tracking-widest font-black">System Online</span>
+                            <span className="font-mono text-sm text-slate-500 uppercase tracking-normal font-black">System Online</span>
                         </div>
                     </div>
                 </div>
@@ -93,10 +93,10 @@ const Sidebar = () => {
             <div className="p-10 border-t border-white/5 bg-black/20">
                 <div className="mb-8 space-y-2">
                     <div className="flex items-center justify-between">
-                        <span className="font-mono text-[10px] text-slate-600 uppercase tracking-widest">Local Time</span>
+                        <span className="font-mono text-sm text-slate-600 uppercase tracking-normal">Local Time</span>
                         <div className="w-1 h-1 rounded-full bg-[#00FFD1] animate-ping"></div>
                     </div>
-                    <div className="font-mono text-2xl text-white font-black tracking-widest">
+                    <div className="font-mono text-2xl text-white font-black tracking-normal">
                         {time.toLocaleTimeString([], { hour12: false })}
                     </div>
                 </div>
@@ -108,7 +108,7 @@ const Sidebar = () => {
                     <div className="p-2 rounded-lg bg-white/5 group-hover:bg-red-400/10 transition-colors">
                         <LogOut size={18} />
                     </div>
-                    <span className="font-mono text-[11px] font-bold tracking-widest uppercase">Logout</span>
+                    <span className="font-mono text-sm font-bold tracking-normal uppercase">Logout</span>
                 </button>
             </div>
         </aside>

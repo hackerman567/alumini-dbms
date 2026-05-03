@@ -90,7 +90,7 @@ const Layout = () => {
                             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
                             exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
                             transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                            className="p-8 lg:p-12"
+                            className="p-8 lg:p-5 md:p-6"
                         >
                             <Outlet />
                         </motion.div>
@@ -101,12 +101,12 @@ const Layout = () => {
             {/* Ticker Bar */}
             <div className="fixed bottom-0 left-0 w-full h-[40px] bg-black/90 border-t border-white/5 flex items-center overflow-hidden z-50">
                 <div className="px-4 border-r border-white/10 h-full flex items-center bg-[#080818] z-10 shrink-0">
-                    <span className="font-display text-[10px] text-[#00FFD1] font-bold tracking-widest uppercase">NEXUS FEED</span>
+                    <span className="font-display text-sm text-[#00FFD1] font-bold tracking-normal uppercase">NEXUS FEED</span>
                 </div>
                 <div className="flex-1 overflow-hidden whitespace-nowrap relative h-full flex items-center px-4">
-                    <div className="flex gap-12 items-center animate-[ticker_20s_linear_infinite] hover:[animation-play-state:paused]">
+                    <div className="flex gap-5 md:p-6 items-center animate-[ticker_20s_linear_infinite] hover:[animation-play-state:paused]">
                         {events.map((ev, i) => (
-                            <div key={i} className="font-mono text-[10px] uppercase tracking-widest flex items-center gap-3">
+                            <div key={i} className="font-mono text-sm uppercase tracking-normal flex items-center gap-3">
                                 <span className="w-1.5 h-1.5 rounded-full" style={{ 
                                     backgroundColor: ev.type === 'job' ? '#00FFD1' : 
                                                     ev.type === 'mentorship' ? '#BF00FF' : 
@@ -123,7 +123,7 @@ const Layout = () => {
                                 </span>
                             </div>
                         ))}
-                        {events.length === 0 && <span className="font-mono text-[10px] text-slate-600 uppercase tracking-widest">SCANNING TIMELINES FOR NEW ACTIVITY...</span>}
+                        {events.length === 0 && <span className="font-mono text-sm text-slate-600 uppercase tracking-normal">SCANNING TIMELINES FOR NEW ACTIVITY...</span>}
                     </div>
                 </div>
             </div>

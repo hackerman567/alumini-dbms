@@ -22,8 +22,8 @@ const JobBoard = () => {
                 client.get('/jobs'),
                 user.role === 'student' ? client.get('/jobs/my-applications') : Promise.resolve({ data: { data: [] } })
             ]);
-            setJobs(jobsRes.data.data);
-            setMyApps(appsRes.data.data);
+            setJobs(jobsRes.data);
+            setMyApps(appsRes.data);
         } catch (err) {
             console.error("Failed to load jobs", err);
         } finally {
@@ -66,15 +66,15 @@ const JobBoard = () => {
             <div className="scan-line"></div>
             
             {/* Page Header */}
-            <header className="flex flex-col md:flex-row md:items-center justify-between gap-10 quantum-card !p-12 rounded-[4rem] border-4 border-white/5 shadow-2xl bg-black/40">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-5 quantum-card p-5 md:p-6 rounded-3xl border-4 border-white/5 shadow-2xl bg-black/40">
                 <div className="space-y-4">
-                    <h2 className="font-display text-7xl font-black text-white mb-2 tracking-tighter uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">Job Board</h2>
-                    <p className="font-mono text-xl text-[#00FFD1] uppercase tracking-widest font-black">{filteredJobs.length} Career opportunities detected.</p>
+                    <h2 className="font-display text-4xl md:text-2xl md:text-3xl font-black text-white mb-2 tracking-normaler uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">Job Board</h2>
+                    <p className="font-mono text-xl text-[#00FFD1] uppercase tracking-normal font-black">{filteredJobs.length} Career opportunities detected.</p>
                 </div>
                 {(user.role === 'alumni' || user.role === 'admin') && (
                     <button 
                         onClick={() => setShowModal(true)}
-                        className="dimension-btn gap-4 !px-12 !py-6 text-xl font-black uppercase tracking-widest shadow-2xl active:scale-95"
+                        className="dimension-btn gap-4 !px-12 !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                     >
                         <Plus size={32} />
                         <span>POST JOB</span>
@@ -83,12 +83,12 @@ const JobBoard = () => {
             </header>
 
             {/* Category Filters */}
-            <div className="flex flex-wrap gap-8 items-center bg-black/40 p-6 rounded-[2.5rem] border-4 border-white/5 shadow-2xl">
+            <div className="flex flex-wrap gap-8 items-center bg-black/40 p-6 rounded-2xl border-4 border-white/5 shadow-2xl">
                 {['All', 'Full-Time', 'Part-Time', 'Remote', 'Internship'].map(type => (
                     <button
                         key={type}
                         onClick={() => setFilters({ ...filters, type })}
-                        className={`px-12 py-5 rounded-2xl font-mono text-sm tracking-widest uppercase transition-all font-black border-4 ${
+                        className={`px-12 py-5 rounded-2xl font-mono text-sm tracking-normal uppercase transition-all font-black border-4 ${
                             filters.type === type 
                             ? 'bg-white text-black border-white shadow-[0_0_30px_rgba(255,255,255,0.2)] scale-105' 
                             : 'bg-transparent text-white/30 border-white/5 hover:border-[#00FFD1] hover:text-[#00FFD1]'
@@ -101,14 +101,14 @@ const JobBoard = () => {
 
             {/* Job Grid */}
             {loading ? (
-                <div className="flex flex-col items-center justify-center py-48">
-                    <div className="w-24 h-24 portal-ring mb-12 flex items-center justify-center">
+                <div className="flex flex-col items-center justify-center py-16 md:py-20">
+                    <div className="w-16 h-16 md:w-20 md:h-20 portal-ring mb-5 md:mb-6 flex items-center justify-center">
                          <div className="w-12 h-12 bg-[#00FFD1] rounded-full animate-pulse shadow-[0_0_20px_#00FFD1]"></div>
                     </div>
-                    <span className="font-mono text-2xl text-[#00FFD1] animate-pulse uppercase tracking-widest font-black">Scanning Opportunities...</span>
+                    <span className="font-mono text-2xl text-[#00FFD1] animate-pulse uppercase tracking-normal font-black">Scanning Opportunities...</span>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 md:p-6">
                     <AnimatePresence>
                         {filteredJobs.map((job, i) => {
                             const isApplied = myApps.includes(job.id);
@@ -120,30 +120,30 @@ const JobBoard = () => {
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9 }}
                                     transition={{ delay: i * 0.05 }}
-                                    className="quantum-card group relative !p-12 flex flex-col rounded-[3.5rem] transition-all hover:shadow-[0_20px_60px_rgba(0,255,209,0.15)] border-2 border-white/5 shadow-2xl bg-black/40"
+                                    className="quantum-card group relative p-5 md:p-6 flex flex-col rounded-3xl transition-all hover:shadow-[0_20px_60px_rgba(0,255,209,0.15)] border-2 border-white/5 shadow-2xl bg-black/40"
                                 >
-                                    <div className="flex justify-between items-start mb-12">
-                                        <div className="w-24 h-24 rounded-3xl bg-black border-4 border-white/10 overflow-hidden shadow-2xl group-hover:border-[#00FFD1]/50 transition-all">
-                                            <div className="w-full h-full flex items-center justify-center font-display text-5xl font-black text-white/10">
+                                    <div className="flex justify-between items-start mb-5 md:mb-6">
+                                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-black border-4 border-white/10 overflow-hidden shadow-2xl group-hover:border-[#00FFD1]/50 transition-all">
+                                            <div className="w-full h-full flex items-center justify-center font-display text-2xl md:text-3xl font-black text-white/10">
                                                 {job.company.charAt(0)}
                                             </div>
                                         </div>
                                         <div className="flex flex-col items-end gap-6">
-                                            <div className="px-8 py-2.5 rounded-2xl border-2 border-[#BF00FF]/30 bg-[#BF00FF]/10 font-mono text-xs text-[#BF00FF] uppercase font-black tracking-widest shadow-lg">
+                                            <div className="px-8 py-2.5 rounded-2xl border-2 border-[#BF00FF]/30 bg-[#BF00FF]/10 font-mono text-sm text-[#BF00FF] uppercase font-black tracking-normal shadow-lg">
                                                 {job.type}
                                             </div>
                                             {isApplied && (
-                                                <div className="px-6 py-2 rounded-xl bg-[#00FFD1]/10 text-[#00FFD1] font-mono text-[11px] border-2 border-[#00FFD1]/30 uppercase font-black tracking-widest shadow-lg">
+                                                <div className="px-6 py-2 rounded-xl bg-[#00FFD1]/10 text-[#00FFD1] font-mono text-sm border-2 border-[#00FFD1]/30 uppercase font-black tracking-normal shadow-lg">
                                                     SUBMITTED
                                                 </div>
                                             )}
                                         </div>
                                     </div>
 
-                                    <h3 className="font-display text-4xl font-black text-white mb-6 group-hover:text-[#00FFD1] transition-colors leading-tight uppercase tracking-tight">
+                                    <h3 className="font-display text-4xl font-black text-white mb-6 group-hover:text-[#00FFD1] transition-colors leading-tight uppercase tracking-normal">
                                         {job.title}
                                     </h3>
-                                    <div className="font-mono text-base text-white/50 mb-12 flex flex-col gap-4 font-black uppercase tracking-tight">
+                                    <div className="font-mono text-base text-white/50 mb-5 md:mb-6 flex flex-col gap-4 font-black uppercase tracking-normal">
                                         <div className="flex items-center gap-4 text-[#00FFD1]">
                                             <Sparkles size={20} />
                                             <span>{job.company}</span>
@@ -155,7 +155,7 @@ const JobBoard = () => {
                                     </div>
 
                                     <div className="flex items-center justify-between pt-12 border-t-2 border-white/5 mt-auto">
-                                        <div className="font-mono text-xl text-white font-black tracking-widest shadow-xl px-6 py-2 rounded-2xl bg-white/5 border-2 border-white/10">
+                                        <div className="font-mono text-xl text-white font-black tracking-normal shadow-xl px-6 py-2 rounded-2xl bg-white/5 border-2 border-white/10">
                                             {job.salary_range || 'COMPETITIVE'}
                                         </div>
                                         <div className="flex gap-6">
@@ -171,7 +171,7 @@ const JobBoard = () => {
                                                 <button 
                                                     onClick={() => !isApplied && handleApply(job.id)}
                                                     disabled={isApplied}
-                                                    className={`dimension-btn !px-10 !py-5 !text-lg gap-6 font-black uppercase tracking-widest shadow-2xl active:scale-95 ${isApplied ? '!opacity-30 !cursor-not-allowed !bg-white/5 !text-white/20 !border-white/5' : ''}`}
+                                                    className={`dimension-btn !px-10 !py-5 !text-lg gap-6 font-black uppercase tracking-normal shadow-2xl active:scale-95 ${isApplied ? '!opacity-30 !cursor-not-allowed !bg-white/5 !text-white/20 !border-white/5' : ''}`}
                                                 >
                                                     <span>{isApplied ? 'SUBMITTED' : 'APPLY'}</span>
                                                     {!isApplied && <ArrowRight size={28} />}
@@ -188,12 +188,12 @@ const JobBoard = () => {
 
             {/* Empty State */}
             {!loading && filteredJobs.length === 0 && (
-                <div className="quantum-card flex flex-col items-center justify-center py-64 text-center bg-black/40 rounded-[4rem] border-dashed border-4 border-white/5 shadow-2xl">
-                    <div className="w-40 h-40 bg-white/5 rounded-full flex items-center justify-center mb-16 relative shadow-inner">
+                <div className="quantum-card flex flex-col items-center justify-center py-64 text-center bg-black/40 rounded-3xl border-dashed border-4 border-white/5 shadow-2xl">
+                    <div className="w-40 h-40 bg-white/5 rounded-full flex items-center justify-center mb-6 md:mb-8 relative shadow-inner">
                         <Zap size={80} className="text-white/10" />
                     </div>
-                    <h3 className="font-display text-5xl text-white/20 mb-8 uppercase tracking-widest font-black">No Opportunities</h3>
-                    <p className="font-mono text-xl text-white/10 max-w-xl font-black uppercase tracking-widest leading-relaxed">System scan complete. No matching openings detected.</p>
+                    <h3 className="font-display text-2xl md:text-3xl text-white/20 mb-8 uppercase tracking-normal font-black">No Opportunities</h3>
+                    <p className="font-mono text-xl text-white/10 max-w-xl font-black uppercase tracking-normal leading-relaxed">System scan complete. No matching openings detected.</p>
                 </div>
             )}
 

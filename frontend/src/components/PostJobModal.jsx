@@ -61,13 +61,13 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                                 <div className="w-8 h-8 portal-ring"></div>
                                 <span>INITIALIZE NEW PORTAL</span>
                             </h3>
-                            <p className="font-mono text-[10px] text-[#00FFD1] opacity-60 uppercase tracking-[0.2em] mt-2">Broadcasting vacancy across all known timelines</p>
+                            <p className="font-mono text-sm text-[#00FFD1] opacity-60 uppercase tracking-normal mt-2">Broadcasting vacancy across all known timelines</p>
                         </div>
 
                         <form onSubmit={handleSubmit} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
-                                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Job Vector (Title)</label>
+                                    <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Job Vector (Title)</label>
                                     <div className="relative">
                                         <Briefcase size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                         <input 
@@ -80,7 +80,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Dimension (Company)</label>
+                                    <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Dimension (Company)</label>
                                     <input 
                                         required
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all"
@@ -93,7 +93,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <div className="space-y-2">
-                                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Location Node</label>
+                                    <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Location Node</label>
                                     <div className="relative">
                                         <MapPin size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                         <input 
@@ -106,7 +106,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Salary Flux</label>
+                                    <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Salary Flux</label>
                                     <div className="relative">
                                         <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
                                         <input 
@@ -119,7 +119,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Shift Protocol</label>
+                                    <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Shift Protocol</label>
                                     <select 
                                         className="w-full bg-white/[0.03] border border-white/10 rounded-xl py-3 px-4 text-sm text-white focus:border-[#00FFD1]/50 focus:outline-none transition-all"
                                         value={formData.type}
@@ -134,7 +134,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="font-mono text-[10px] text-slate-500 uppercase tracking-widest">Portal Specs (Description)</label>
+                                <label className="font-mono text-sm text-slate-500 uppercase tracking-normal">Portal Specs (Description)</label>
                                 <textarea 
                                     required
                                     rows="4"

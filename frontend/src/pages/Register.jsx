@@ -42,17 +42,17 @@ const Register = () => {
             <motion.div 
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="w-full max-w-[640px] quantum-card !p-16 rounded-[4rem] border-4 border-white/5 relative z-10 shadow-[0_40px_80px_rgba(0,0,0,0.8)] bg-black/40"
+                className="w-full max-w-[640px] quantum-card p-6 md:p-8 rounded-3xl border-4 border-white/5 relative z-10 shadow-[0_40px_80px_rgba(0,0,0,0.8)] bg-black/40"
             >
-                <div className="text-center mb-16">
-                    <div className="w-24 h-24 rounded-[2rem] bg-black border-4 border-white/10 flex items-center justify-center mx-auto mb-10 shadow-2xl transition-transform hover:scale-110">
+                <div className="text-center mb-6 md:mb-8">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl bg-black border-4 border-white/10 flex items-center justify-center mx-auto mb-10 shadow-2xl transition-transform hover:scale-110">
                         <Hexagon size={48} className="text-[#00FFD1] drop-shadow-[0_0_10px_#00FFD1]" />
                     </div>
-                    <h1 className="text-6xl font-black text-white mb-4 tracking-tighter uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">CREATE<span className="text-[#00FFD1]">ACCOUNT</span></h1>
+                    <h1 className="text-3xl md:text-4xl font-black text-white mb-4 tracking-normaler uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">CREATE<span className="text-[#00FFD1]">ACCOUNT</span></h1>
                     <div className="flex items-center justify-center gap-6 mt-12">
                         <div className={`h-2 rounded-full transition-all duration-700 ${step === 1 ? 'w-24 bg-[#00FFD1] shadow-[0_0_15px_#00FFD1]' : 'w-12 bg-white/5'}`}></div>
                         <div className={`h-2 rounded-full transition-all duration-700 ${step === 2 ? 'w-24 bg-[#00FFD1] shadow-[0_0_15px_#00FFD1]' : 'w-12 bg-white/5'}`}></div>
-                        <span className="font-mono text-xs text-white/20 font-black uppercase tracking-[0.4em] ml-6">STATUS: {step}/2</span>
+                        <span className="font-mono text-sm text-white/20 font-black uppercase tracking-[0.4em] ml-6">STATUS: {step}/2</span>
                     </div>
                 </div>
 
@@ -63,10 +63,10 @@ const Register = () => {
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}
-                                className="p-8 bg-red-500/10 border-4 border-red-500/20 rounded-[2rem] flex items-center gap-6 text-red-500 text-sm font-mono overflow-hidden shadow-2xl"
+                                className="p-8 bg-red-500/10 border-4 border-red-500/20 rounded-xl flex items-center gap-6 text-red-500 text-sm font-mono overflow-hidden shadow-2xl"
                             >
                                 <AlertCircle size={32} />
-                                <span className="font-black uppercase tracking-[0.2em]">IDENTITY ERROR: {error}</span>
+                                <span className="font-black uppercase tracking-normal">IDENTITY ERROR: {error}</span>
                             </motion.div>
                         )}
 
@@ -79,11 +79,11 @@ const Register = () => {
                                 className="space-y-12"
                             >
                                 <div className="space-y-6">
-                                    <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">Full Legal Name</label>
+                                    <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Full Legal Name</label>
                                     <div className="relative group">
                                         <User size={28} className="absolute left-8 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-[#00FFD1] transition-all group-focus-within:scale-110" />
                                         <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 pl-20 pr-8 text-xl text-white font-mono uppercase tracking-tighter focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 pl-20 pr-8 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                                             type="text" required 
                                             placeholder="JOHNATHAN DOE"
                                             value={formData.name}
@@ -93,11 +93,11 @@ const Register = () => {
                                 </div>
 
                                 <div className="space-y-6">
-                                    <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">Institutional Email</label>
+                                    <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Institutional Email</label>
                                     <div className="relative group">
                                         <Mail size={28} className="absolute left-8 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-[#00FFD1] transition-all group-focus-within:scale-110" />
                                         <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 pl-20 pr-8 text-xl text-white font-mono uppercase tracking-tighter focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 pl-20 pr-8 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                                             type="email" required 
                                             placeholder="J.DOE@UNIVERSITY.EDU"
                                             value={formData.email}
@@ -107,11 +107,11 @@ const Register = () => {
                                 </div>
 
                                 <div className="space-y-6">
-                                    <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">Secure Password</label>
+                                    <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Secure Password</label>
                                     <div className="relative group">
                                         <Lock size={28} className="absolute left-8 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-[#00FFD1] transition-all group-focus-within:scale-110" />
                                         <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 pl-20 pr-8 text-xl text-white font-mono focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 pl-20 pr-8 text-xl text-white font-mono focus:border-[#00FFD1]/50 focus:bg-black/60 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                                             type="password" required 
                                             placeholder="••••••••"
                                             value={formData.password}
@@ -124,32 +124,32 @@ const Register = () => {
                                     <button 
                                         type="button"
                                         onClick={() => setFormData({...formData, role: 'student'})}
-                                        className={`p-8 rounded-[2rem] border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'student' ? 'border-[#00FFD1] bg-black text-[#00FFD1] scale-110 shadow-[0_0_50px_rgba(0,255,209,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
+                                        className={`p-8 rounded-xl border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'student' ? 'border-[#00FFD1] bg-black text-[#00FFD1] scale-110 shadow-[0_0_50px_rgba(0,255,209,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
                                     >
                                         <BookOpen size={36} />
-                                        <span className="font-mono text-[10px] font-black uppercase tracking-[0.4em]">Student</span>
+                                        <span className="font-mono text-sm font-black uppercase tracking-[0.4em]">Student</span>
                                     </button>
                                     <button 
                                         type="button"
                                         onClick={() => setFormData({...formData, role: 'alumni'})}
-                                        className={`p-8 rounded-[2rem] border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'alumni' ? 'border-[#BF00FF] bg-black text-[#BF00FF] scale-110 shadow-[0_0_50px_rgba(191,0,255,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
+                                        className={`p-8 rounded-xl border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'alumni' ? 'border-[#BF00FF] bg-black text-[#BF00FF] scale-110 shadow-[0_0_50px_rgba(191,0,255,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
                                     >
                                         <GraduationCap size={36} />
-                                        <span className="font-mono text-[10px] font-black uppercase tracking-[0.4em]">Alumni</span>
+                                        <span className="font-mono text-sm font-black uppercase tracking-[0.4em]">Alumni</span>
                                     </button>
                                     <button 
                                         type="button"
                                         onClick={() => setFormData({...formData, role: 'mentor'})}
-                                        className={`p-8 rounded-[2rem] border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'mentor' ? 'border-amber-500 bg-black text-amber-500 scale-110 shadow-[0_0_50px_rgba(245,158,11,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
+                                        className={`p-8 rounded-xl border-4 flex flex-col items-center gap-6 transition-all duration-500 shadow-2xl ${formData.role === 'mentor' ? 'border-amber-500 bg-black text-amber-500 scale-110 shadow-[0_0_50px_rgba(245,158,11,0.2)]' : 'border-white/5 bg-black text-white/10 hover:border-white/10'}`}
                                     >
                                         <User size={36} />
-                                        <span className="font-mono text-[10px] font-black uppercase tracking-[0.4em]">Mentor</span>
+                                        <span className="font-mono text-sm font-black uppercase tracking-[0.4em]">Mentor</span>
                                     </button>
                                 </div>
 
                                 <button 
                                     type="button" 
-                                    className="dimension-btn w-full !py-8 rounded-[2.5rem] flex items-center justify-center gap-6 text-2xl font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all mt-10" 
+                                    className="dimension-btn w-full !py-8 rounded-2xl flex items-center justify-center gap-6 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95 transition-all mt-10" 
                                     onClick={() => setStep(2)}
                                 >
                                     <span>Proceed</span>
@@ -165,10 +165,10 @@ const Register = () => {
                                 className="space-y-12"
                             >
                                 <div className="space-y-6">
-                                    <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">Academic Department</label>
+                                    <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Academic Department</label>
                                     <select 
                                         required 
-                                        className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 px-10 text-xl text-white font-mono uppercase tracking-widest focus:border-[#00FFD1]/50 focus:outline-none transition-all shadow-inner appearance-none group hover:border-white/10"
+                                        className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono uppercase tracking-normal focus:border-[#00FFD1]/50 focus:outline-none transition-all shadow-inner appearance-none group hover:border-white/10"
                                         value={formData.department}
                                         onChange={(e) => setFormData({...formData, department: e.target.value})}
                                     >
@@ -182,11 +182,11 @@ const Register = () => {
 
                                 {(formData.role === 'alumni' || formData.role === 'mentor') ? (
                                     <div className="space-y-6">
-                                        <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">
+                                        <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">
                                             {formData.role === 'alumni' ? 'Year of Graduation' : 'Professional Background'}
                                         </label>
                                         <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 px-10 text-xl text-white font-mono uppercase tracking-tighter focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                                             type={formData.role === 'alumni' ? 'number' : 'text'} 
                                             required 
                                             placeholder={formData.role === 'alumni' ? 'E.G. 2023' : 'E.G. SENIOR SOFTWARE ENGINEER'}
@@ -196,9 +196,9 @@ const Register = () => {
                                     </div>
                                 ) : (
                                     <div className="space-y-6">
-                                        <label className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black ml-4">Year of Enrollment</label>
+                                        <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Year of Enrollment</label>
                                         <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-[2.5rem] py-8 px-10 text-xl text-white font-mono focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
                                             type="number" required min="2010" max="2026"
                                             placeholder="E.G. 2022"
                                             value={formData.enrollment_year}
@@ -210,14 +210,14 @@ const Register = () => {
                                 <div className="flex gap-8 pt-10">
                                     <button 
                                         type="button" 
-                                        className="p-10 rounded-[2.5rem] border-4 border-white/5 bg-black text-white/20 hover:text-white hover:border-white/10 transition-all shadow-2xl active:scale-95"
+                                        className="p-10 rounded-2xl border-4 border-white/5 bg-black text-white/20 hover:text-white hover:border-white/10 transition-all shadow-2xl active:scale-95"
                                         onClick={() => setStep(1)}
                                     >
                                         <ChevronLeft size={40} />
                                     </button>
                                     <button 
                                         type="submit" 
-                                        className="dimension-btn flex-1 !py-8 rounded-[2.5rem] flex items-center justify-center gap-6 text-2xl font-black uppercase tracking-widest shadow-2xl active:scale-95 transition-all disabled:opacity-50" 
+                                        className="dimension-btn flex-1 !py-8 rounded-2xl flex items-center justify-center gap-6 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95 transition-all disabled:opacity-50" 
                                         disabled={loading}
                                     >
                                         {loading ? (
@@ -238,7 +238,7 @@ const Register = () => {
                 </form>
 
                 <div className="mt-16 text-center border-t-4 border-white/5 pt-12">
-                    <p className="font-mono text-xs text-white/20 uppercase tracking-[0.3em] font-black">
+                    <p className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black">
                         Existing Member? <Link to="/login" className="text-[#00FFD1] hover:text-white transition-all ml-4 underline decoration-2 underline-offset-8">Sign In Here</Link>
                     </p>
                 </div>
