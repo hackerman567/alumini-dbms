@@ -55,7 +55,15 @@ const JobBoard = () => {
     };
 
     const filteredJobs = jobs.filter(job => {
-        const matchesType = filters.type === 'All' || job.type === filters.type;
+        const typeMap = {
+            'All': 'All',
+            'Full-Time': 'full_time',
+            'Part-Time': 'part_time',
+            'Remote': 'remote',
+            'Internship': 'internship'
+        };
+        const targetType = typeMap[filters.type];
+        const matchesType = targetType === 'All' || job.type === targetType;
         const matchesSearch = job.title.toLowerCase().includes(filters.search.toLowerCase()) || 
                              job.company.toLowerCase().includes(filters.search.toLowerCase());
         return matchesType && matchesSearch;

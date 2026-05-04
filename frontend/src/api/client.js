@@ -2,10 +2,7 @@ import axios from 'axios';
 
 const client = axios.create({
     baseURL: '/api/v1',
-    withCredentials: true,
-    headers: {
-        'Content-Type': 'application/json'
-    }
+    withCredentials: true
 });
 
 // Request Interceptor: Add Token from LocalStorage

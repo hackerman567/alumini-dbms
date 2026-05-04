@@ -68,10 +68,26 @@ INSERT INTO mentorship_requests (student_id, alumni_id, message, status) VALUES
 (7, 3, 'Hi Sarah, Id love to get your advice on becoming a Full Stack Developer.', 'pending'),
 (8, 4, 'Hello David, your career in manufacturing is inspiring. Can we chat?', 'accepted');
 
--- Messages
-INSERT INTO messages (sender_id, receiver_id, subject, body) VALUES 
-(3, 7, 'Re: Mentorship', 'Hi Alice! Sure, I would love to chat. Let us schedule a call next week.'),
-(1, 8, 'Welcome to the platform', 'Hello Bob, welcome to AlumniConnect! Explore the job board for opportunities.');
+-- Messages & Conversations
+DO $$ 
+DECLARE 
+    conv1_id UUID;
+    conv2_id UUID;
+BEGIN
+    -- Conversation between Sarah (3) and Alice (7)
+    INSERT INTO conversations (user1_id, user2_id) VALUES (3, 7) RETURNING id INTO conv1_id;
+    INSERT INTO messages (conversation_id, sender_id, receiver_id, body) VALUES 
+    (conv1_id, 3, 7, 'Hi Alice! Sure, I would love to chat. Let us schedule a call next week.');
+    
+    -- Conversation between Admin (1) and Bob (8)
+    INSERT INTO conversations (user1_id, user2_id) VALUES (1, 8) RETURNING id INTO conv2_id;
+    INSERT INTO messages (conversation_id, sender_id, receiver_id, body) VALUES 
+    (conv2_id, 1, 8, 'Hello Bob, welcome to AlumniConnect! Explore the job board for opportunities.');
+    
+    -- Update last_message_id
+    UPDATE conversations SET last_message_id = (SELECT id FROM messages WHERE conversation_id = conv1_id ORDER BY sent_at DESC LIMIT 1) WHERE id = conv1_id;
+    UPDATE conversations SET last_message_id = (SELECT id FROM messages WHERE conversation_id = conv2_id ORDER BY sent_at DESC LIMIT 1) WHERE id = conv2_id;
+END $$;
 
 -- Notifications
 INSERT INTO notifications (user_id, type, title, body) VALUES 

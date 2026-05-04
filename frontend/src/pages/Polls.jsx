@@ -23,6 +23,22 @@ const Polls = () => {
         fetchPolls();
     }, []);
 
+    useEffect(() => {
+        if (polls.length > 0) {
+            polls.forEach(poll => {
+                const channel = `poll_update_${poll.id}`;
+                socket.on(channel, (updatedOptions) => {
+                    setPolls(prev => prev.map(p => 
+                        p.id === poll.id ? { ...p, options: updatedOptions, total_votes: updatedOptions.reduce((acc, curr) => acc + parseInt(curr.vote_count), 0) } : p
+                    ));
+                });
+            });
+            return () => {
+                polls.forEach(poll => socket.off(`poll_update_${poll.id}`));
+            };
+        }
+    }, [polls.length]);
+
     const fetchPolls = async () => {
         try {
             const res = await client.get('/polls');

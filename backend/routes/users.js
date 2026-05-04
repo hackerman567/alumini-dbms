@@ -100,11 +100,11 @@ router.post('/avatar', protect, upload.single('avatar'), async (req, res) => {
 
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse');
-import { GoogleGenerativeAI } from '@google/generative-ai';
+const pdf = require('pdf-parse');
+import Groq from 'groq-sdk';
 import fs from 'fs';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 const pdfUpload = multer({ 
     dest: 'uploads/resumes/',
@@ -119,11 +119,13 @@ router.post('/resume-analyze', protect, pdfUpload.single('resume'), async (req, 
     try {
         // 1. Extract text from PDF
         const dataBuffer = fs.readFileSync(req.file.path);
-        const pdfData = await pdfParse(dataBuffer);
+        const pdfData = await pdf(dataBuffer);
         const resumeText = pdfData.text;
 
-        // 2. Query Gemini
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        // 2. Query Groq
+        console.log(`🧠 Analyzing resume for role: ${role}`);
+        console.log(`📄 Extracted Text Length: ${resumeText.length}`);
+
         const prompt = `
             Analyze this resume for the role of "${role}".
             Resume Text: ${resumeText}
@@ -133,25 +135,57 @@ router.post('/resume-analyze', protect, pdfUpload.single('resume'), async (req, 
             - strengths (array of strings)
             - gaps (array of strings)
             - roadmap (array of 3 objects with {title, desc})
+            - courses (array of 3 objects with {title, platform, link})
+            - recommended_alumni (array of 3 objects with {name, role, user_id})
             
+            For recommended_alumni, provide realistic names and roles. 
             Return ONLY the JSON.
         `;
 
-        const result = await model.generateContent(prompt);
-        const response = await result.response;
-        let text = response.text();
-        
-        // Clean markdown JSON if present
-        text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-        const analysis = JSON.parse(text);
+        const completion = await groq.chat.completions.create({
+            messages: [
+                {
+                    role: "system",
+                    content: "You are a professional career advisor. Return analysis in JSON format."
+                },
+                {
+                    role: "user",
+                    content: prompt
+                }
+            ],
+            model: "llama3-8b-8192",
+            response_format: { type: "json_object" }
+        });
+
+        const rawContent = completion.choices[0].message.content;
+        console.log(`🤖 AI Response: ${rawContent.substring(0, 100)}...`);
+
+        let analysis;
+        try {
+            analysis = JSON.parse(rawContent);
+        } catch (parseErr) {
+            console.error("JSON Parse Error:", parseErr);
+            // Fallback: try to find JSON in the string
+            const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                analysis = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error("Could not parse AI response as JSON");
+            }
+        }
 
         // Clean up temp file
-        fs.unlinkSync(req.file.path);
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
 
         res.json({ success: true, analysis });
     } catch (err) {
         console.error("AI Analysis Error:", err);
-        res.status(500).json({ success: false, error: "Neural link failed" });
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        res.status(500).json({ success: false, error: err.message || "Neural link failed" });
     }
 });
 

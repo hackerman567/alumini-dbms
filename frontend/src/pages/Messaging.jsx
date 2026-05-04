@@ -25,20 +25,76 @@ const Messaging = () => {
     };
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const userId = params.get('user');
+        if (userId) {
+            handleInitiateConversation(userId);
+        }
         fetchConversations();
     }, []);
+
+    const handleInitiateConversation = async (targetUserId) => {
+        try {
+            const res = await client.post('/messages', {
+                receiver_id: targetUserId,
+                body: "Starting a new connection..."
+            });
+            if (res.success) {
+                // Refresh conversations and select the new one
+                const convsRes = await client.get('/messages/conversations');
+                const convs = convsRes.data || [];
+                setConversations(convs);
+                const newConv = convs.find(c => c.id === res.data.conversation_id || c.id === res.data.id);
+                if (newConv) setSelectedConv(newConv);
+            }
+        } catch (err) {
+            console.error("Failed to initiate conversation", err);
+        }
+    };
 
     useEffect(() => {
         if (selectedConv) {
             fetchMessages(selectedConv.id);
+            
+            // Join Room
+            socket.emit('join_room', `chat_${selectedConv.id}`);
+
+            // Listen for Messages
             const channel = `chat_${selectedConv.id}`;
-            socket.on(channel, (msg) => {
+            socket.on(newMessageEvent, (msg) => {
                 setMessages(prev => [...prev, msg]);
                 scrollToBottom();
+                if (msg.sender_id !== user.id) {
+                    markAsRead(selectedConv.id);
+                }
             });
-            return () => socket.off(channel);
+
+            // Listen for Typing Status
+            socket.on('typing_status', ({ userName, isTyping }) => {
+                if (isTyping) {
+                    setIsTyping(userName);
+                } else {
+                    setIsTyping(null);
+                }
+            });
+
+            return () => {
+                socket.emit('leave_room', `chat_${selectedConv.id}`);
+                socket.off(newMessageEvent);
+                socket.off('typing_status');
+            };
         }
     }, [selectedConv]);
+
+    const markAsRead = async (id) => {
+        try {
+            await client.put(`/messages/read/${id}`);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const newMessageEvent = `chat_msg`; // Backend uses broadcast(`chat_${conversationId}`, newMessage)
 
     useEffect(() => {
         scrollToBottom();
@@ -73,7 +129,9 @@ const Messaging = () => {
         if (!newMessage.trim() || !selectedConv) return;
 
         try {
-            const receiverId = selectedConv.user1_id === user.id ? selectedConv.user2_id : selectedConv.user1_id;
+            // participant_id is returned by the new GET /conversations query
+            const receiverId = selectedConv.participant_id || 
+                (selectedConv.user1_id === user.id ? selectedConv.user2_id : selectedConv.user1_id);
             await client.post('/messages', {
                 receiver_id: receiverId,
                 body: newMessage

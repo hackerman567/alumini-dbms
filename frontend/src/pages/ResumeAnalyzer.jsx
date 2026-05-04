@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Cpu, Target, AlertCircle, CheckCircle2, ArrowRight, Upload, Brain } from 'lucide-react';
+import { FileText, Cpu, Target, AlertCircle, CheckCircle2, ArrowRight, Upload, Brain, Radio, Users } from 'lucide-react';
 import client from '../api/client';
 
 const ResumeAnalyzer = () => {
@@ -22,13 +22,19 @@ const ResumeAnalyzer = () => {
         formData.append('role', targetRole);
 
         try {
-            const res = await client.post('/users/resume-analyze', formData);
+            const res = await client.post('/users/resume-analyze', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            // Axios interceptor returns response.data, so res = { success, analysis }
             if (res.success) {
-                setReport(res.data.analysis);
+                setReport(res.analysis);
+            } else {
+                throw new Error(res.error || 'Analysis failed');
             }
         } catch (err) {
             console.error("AI analysis failed:", err);
-            alert("Connection failed. Please try again.");
+            const msg = err?.error || err?.message || "Connection failed. Please try again.";
+            alert(msg);
         } finally {
             setAnalyzing(false);
         }
@@ -154,8 +160,8 @@ const ResumeAnalyzer = () => {
                                             <CheckCircle2 size={24} /> Key Strengths
                                         </h4>
                                         <div className="flex flex-wrap gap-4">
-                                            {report.strengths.map((s, i) => (
-                                                <span key={i} className="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-2xl text-sm text-white font-black uppercase tracking-normal shadow-lg">{s}</span>
+                                            {report.strengths?.map((s, i) => (
+                                                <span key={i} className="px-6 py-3 bg-[#00FFD1]/10 border-2 border-[#00FFD1]/30 rounded-2xl text-sm text-[#00FFD1] font-black uppercase tracking-normal shadow-lg">{s}</span>
                                             ))}
                                         </div>
                                     </section>
@@ -166,12 +172,52 @@ const ResumeAnalyzer = () => {
                                             <AlertCircle size={24} /> Skill Gaps
                                         </h4>
                                         <div className="flex flex-wrap gap-4">
-                                            {report.gaps.map((g, i) => (
-                                                <span key={i} className="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-2xl text-sm text-white font-black uppercase tracking-normal shadow-lg">{g}</span>
+                                            {report.gaps?.map((g, i) => (
+                                                <span key={i} className="px-6 py-3 bg-[#FF2D6B]/10 border-2 border-[#FF2D6B]/30 rounded-2xl text-sm text-[#FF2D6B] font-black uppercase tracking-normal shadow-lg">{g}</span>
                                             ))}
                                         </div>
                                     </section>
                                 </div>
+
+                                {/* Recommended Courses */}
+                                <section className="quantum-card p-6 md:p-8 rounded-3xl border-2 border-white/5 shadow-2xl bg-black/40">
+                                    <h4 className="font-mono text-sm text-[#BF00FF] uppercase tracking-normal mb-10 font-black flex items-center gap-4">
+                                        <Radio size={24} className="text-[#BF00FF]" /> Recommended Courses
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {report.courses?.map((course, i) => (
+                                            <div key={i} className="p-6 rounded-2xl bg-white/5 border-2 border-white/10 hover:border-[#BF00FF]/50 transition-all group">
+                                                <p className="text-xl text-white font-black uppercase mb-3 leading-none">{course.title}</p>
+                                                <p className="text-xs font-mono text-[#BF00FF] uppercase mb-10 font-black tracking-normal">{course.platform}</p>
+                                                <a href={course.link} target="_blank" rel="noreferrer" className="flex items-center gap-4 text-xs font-mono text-white/40 group-hover:text-white uppercase tracking-normal font-black">
+                                                    View Course <ArrowRight size={14} />
+                                                </a>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
+
+                                {/* Recommended Alumni */}
+                                <section className="quantum-card p-6 md:p-8 rounded-3xl border-2 border-white/5 shadow-2xl bg-black/40">
+                                    <h4 className="font-mono text-sm text-[#00FFD1] uppercase tracking-normal mb-10 font-black flex items-center gap-4">
+                                        <Users size={24} /> Expert Alumni Connections
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        {report.recommended_alumni?.map((alum, i) => (
+                                            <div key={i} className="p-6 rounded-2xl bg-white/5 border-2 border-white/10 hover:border-[#00FFD1]/50 transition-all flex flex-col items-center text-center">
+                                                <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#00FFD1] to-[#BF00FF] mb-6 flex items-center justify-center font-display text-white text-xl font-black">{alum.name?.charAt(0)}</div>
+                                                <p className="text-lg text-white font-black uppercase mb-1">{alum.name}</p>
+                                                <p className="text-xs font-mono text-white/40 uppercase mb-8 font-black tracking-normal">{alum.role}</p>
+                                                <button 
+                                                    onClick={() => alert(`Connection request sent to ${alum.name}!`)}
+                                                    className="dimension-btn !py-3 !px-6 text-xs font-black uppercase shadow-xl w-full"
+                                                >
+                                                    Forge Connection
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </section>
 
                                 {/* Roadmap */}
                                 <section className="quantum-card p-6 md:p-8 rounded-3xl border-2 border-white/5 shadow-2xl relative overflow-hidden bg-black/40">
@@ -179,10 +225,10 @@ const ResumeAnalyzer = () => {
                                         <ArrowRight size={160} />
                                     </div>
                                     <h4 className="font-mono text-sm text-[#00FFD1] uppercase tracking-normal mb-6 md:mb-8 font-black flex items-center gap-4">
-                                        Career Roadmap
+                                        <Cpu size={24} /> Career Roadmap
                                     </h4>
                                     <div className="space-y-12">
-                                        {report.roadmap.map((step, i) => (
+                                        {report.roadmap?.map((step, i) => (
                                             <div key={i} className="flex gap-4 md:gap-5 items-start group">
                                                 <div className="w-16 h-16 rounded-3xl border-4 border-white/10 flex items-center justify-center text-xl font-mono text-white group-hover:border-[#00FFD1] group-hover:text-[#00FFD1] transition-all shrink-0 font-black shadow-xl">0{i+1}</div>
                                                 <div className="space-y-4 pt-2">

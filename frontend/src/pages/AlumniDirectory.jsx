@@ -122,7 +122,11 @@ const AlumniDirectory = () => {
                                         <button className="dimension-btn !p-6 rounded-xl !bg-white/5 !text-white border-4 border-white/10 hover:!text-[#00FFD1] hover:!border-[#00FFD1]/30 transition-all flex items-center justify-center shadow-xl active:scale-95" title="View Profile">
                                             <User size={32} />
                                         </button>
-                                        <button className="dimension-btn !p-6 rounded-xl !bg-white/5 !text-white border-4 border-white/10 hover:!text-[#BF00FF] hover:!border-[#BF00FF]/30 transition-all flex items-center justify-center shadow-xl active:scale-95" title="Send Message">
+                                        <button 
+                                            onClick={() => window.location.href = `/messaging?user=${person.id}`}
+                                            className="dimension-btn !p-6 rounded-xl !bg-white/5 !text-white border-4 border-white/10 hover:!text-[#BF00FF] hover:!border-[#BF00FF]/30 transition-all flex items-center justify-center shadow-xl active:scale-95" 
+                                            title="Send Message"
+                                        >
                                             <MessageSquare size={32} />
                                         </button>
                                     </div>

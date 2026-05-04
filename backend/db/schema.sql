@@ -156,6 +156,7 @@ CREATE TABLE IF NOT EXISTS job_applications (
 -- 11. MESSAGES
 CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
+    conversation_id UUID,
     sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     subject VARCHAR(255),
@@ -297,11 +298,11 @@ CREATE TABLE IF NOT EXISTS poll_votes (
 -- 21. COMMS ENHANCEMENTS (CONVERSATIONS)
 CREATE TABLE IF NOT EXISTS conversations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    participant_a INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    participant_b INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    last_message TEXT,
-    last_activity TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(participant_a, participant_b)
+    user1_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user2_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    last_message_id INTEGER,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user1_id, user2_id)
 );
 
 -- 22. AVAILABILITY & BOOKINGS

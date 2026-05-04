@@ -2,18 +2,23 @@ import express from 'express';
 const router = express.Router();
 import db from '../db/index.js';
 import { protect } from '../middleware/auth.js';
-import { broadcast } from '../utils/broadcast.js';
+import { broadcast, broadcastToRoom } from '../utils/broadcast.js';
 
 // @route   GET /api/v1/messages/conversations
 // @desc    Get all conversations for the logged in user
 router.get('/conversations', protect, async (req, res) => {
     try {
         const result = await db.query(`
-            SELECT c.*, 
-                   u.name as participant_name, u.avatar_url as participant_avatar, u.role as participant_role,
-                   m.body as last_message, m.sent_at as last_message_time
+            SELECT 
+                c.id, c.user1_id, c.user2_id, c.updated_at,
+                CASE WHEN c.user1_id = $1 THEN u2.name ELSE u1.name END as participant_name,
+                CASE WHEN c.user1_id = $1 THEN u2.avatar_url ELSE u1.avatar_url END as participant_avatar,
+                CASE WHEN c.user1_id = $1 THEN u2.role ELSE u1.role END as participant_role,
+                CASE WHEN c.user1_id = $1 THEN c.user2_id ELSE c.user1_id END as participant_id,
+                m.body as last_message, m.sent_at as last_message_time
             FROM conversations c
-            JOIN users u ON (c.user1_id = u.id AND c.user2_id = $1) OR (c.user2_id = u.id AND c.user1_id = $1)
+            JOIN users u1 ON c.user1_id = u1.id
+            JOIN users u2 ON c.user2_id = u2.id
             LEFT JOIN messages m ON c.last_message_id = m.id
             WHERE c.user1_id = $1 OR c.user2_id = $1
             ORDER BY c.updated_at DESC
@@ -50,6 +55,20 @@ router.get('/:conversationId', protect, async (req, res) => {
     }
 });
 
+// @route   PUT /api/v1/messages/read/:conversationId
+// @desc    Mark all messages in a conversation as read
+router.put('/read/:conversationId', protect, async (req, res) => {
+    try {
+        await db.query(
+            'UPDATE messages SET is_read = true WHERE conversation_id = $1 AND receiver_id = $2',
+            [req.params.conversationId, req.user.id]
+        );
+        res.json({ success: true, message: "Signal acknowledged" });
+    } catch (err) {
+        res.status(500).json({ success: false, error: "Read receipt failed" });
+    }
+});
+
 // @route   POST /api/v1/messages
 // @desc    Send a message
 router.post('/', protect, async (req, res) => {
@@ -57,22 +76,22 @@ router.post('/', protect, async (req, res) => {
     if (!receiver_id || !body) return res.status(400).json({ success: false, error: "Incomplete signal data" });
 
     try {
-        // 1. Find or create conversation
-        let convResult = await db.query(
-            'SELECT id FROM conversations WHERE (user1_id = $1 AND user2_id = $2) OR (user1_id = $2 AND user2_id = $1)',
-            [req.user.id, receiver_id]
+        // 1. Find or create conversation (use LEAST/GREATEST to ensure consistent ordering)
+        const u1 = Math.min(req.user.id, parseInt(receiver_id));
+        const u2 = Math.max(req.user.id, parseInt(receiver_id));
+
+        // Upsert pattern: avoids race condition duplicate key errors
+        await db.query(
+            'INSERT INTO conversations (user1_id, user2_id) VALUES ($1, $2) ON CONFLICT (user1_id, user2_id) DO NOTHING',
+            [u1, u2]
         );
 
-        let conversationId;
-        if (convResult.rows.length === 0) {
-            const newConv = await db.query(
-                'INSERT INTO conversations (user1_id, user2_id) VALUES ($1, $2) RETURNING id',
-                [req.user.id, receiver_id]
-            );
-            conversationId = newConv.rows[0].id;
-        } else {
-            conversationId = convResult.rows[0].id;
-        }
+        let convResult = await db.query(
+            'SELECT id FROM conversations WHERE user1_id = $1 AND user2_id = $2',
+            [u1, u2]
+        );
+
+        let conversationId = convResult.rows[0].id;
 
         // 2. Insert message
         const msgResult = await db.query(
@@ -88,7 +107,7 @@ router.post('/', protect, async (req, res) => {
         );
 
         // 4. Real-time broadcast
-        broadcast(`chat_${conversationId}`, newMessage);
+        broadcastToRoom(`chat_${conversationId}`, 'chat_msg', newMessage);
         broadcast(`inbox_${receiver_id}`, {
             conversation_id: conversationId,
             sender_name: req.user.name,

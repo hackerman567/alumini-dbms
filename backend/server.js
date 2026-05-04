@@ -7,6 +7,9 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
+
+// Ensure upload directories exist at startup
+['uploads/resumes', 'uploads/avatars'].forEach(dir => fs.mkdirSync(dir, { recursive: true }));
 import http from 'http';
 import { Server } from 'socket.io';
 
@@ -51,6 +54,25 @@ setIo(io);
 
 io.on('connection', (socket) => {
     console.log('⚡ Nexus Socket Connected:', socket.id);
+
+    socket.on('join_room', (roomId) => {
+        socket.join(roomId);
+        console.log(`User joined room: ${roomId}`);
+    });
+
+    socket.on('leave_room', (roomId) => {
+        socket.leave(roomId);
+        console.log(`User left room: ${roomId}`);
+    });
+
+    socket.on('typing', ({ roomId, userName }) => {
+        socket.to(roomId).emit('typing_status', { userName, isTyping: true });
+    });
+
+    socket.on('stop_typing', ({ roomId }) => {
+        socket.to(roomId).emit('typing_status', { isTyping: false });
+    });
+
     socket.on('disconnect', () => {
         console.log('Nexus Socket Disconnected:', socket.id);
     });
@@ -115,6 +137,6 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 AlumniConnect Active on Port ${PORT}`);
 });
