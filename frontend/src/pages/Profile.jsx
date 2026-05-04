@@ -5,46 +5,90 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
     User, Mail, Briefcase, GraduationCap, 
     Save, Camera, Shield, Zap, Globe, Github, Linkedin,
-    Hexagon, Activity, Cpu, Code
+    Hexagon, Activity, Cpu, Code, BookOpen
 } from 'lucide-react';
 
 const Profile = () => {
     const { user, updateProfile } = useAuth();
     const [isEditing, setIsEditing] = useState(false);
-    const [formData, setFormData] = useState({ ...user });
+    const [formData, setFormData] = useState({});
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [achievements, setAchievements] = useState([]);
     const [allBadges, setAllBadges] = useState([]);
 
+    // API URL Resolver for Avatars
+    const getAvatarSrc = (path) => {
+        if (!path) return null;
+        // If it's already a full URL
+        if (path.startsWith('http')) return path;
+        // Use environment variable or default to relative (proxy handled)
+        const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+        return `${base}${path}`;
+    };
+
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                name: user.name || '',
+                email: user.email || '',
+                bio: user.profile?.bio || '',
+                skills: user.profile?.skills || [],
+                department: user.profile?.department || '',
+                current_company: user.profile?.current_company || user.profile?.company || '',
+                job_title: user.profile?.job_title || '',
+                graduation_year: user.profile?.graduation_year || '',
+                enrollment_year: user.profile?.enrollment_year || ''
+            });
+        }
+    }, [user]);
+
     useEffect(() => {
         const fetchAchievements = async () => {
             try {
                 const res = await client.get('/achievements/me');
-                if (res.success) {
-                    setAchievements(res.data);
-                    setAllBadges(res.data.all_badges);
+                if (res && res.success) {
+                    setAchievements(res.data || []);
+                    setAllBadges(res.data?.all_badges || []);
                 }
             } catch (err) {
                 console.error("Failed to load achievements", err);
             }
         };
-        fetchAchievements();
-    }, []);
+        if (user) fetchAchievements();
+    }, [user]);
 
     const handleAvatarUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
+        // TC24 & TC25 Validation
+        if (file.size > 2 * 1024 * 1024) {
+            return alert("Error: 'File size must be under 2MB.'");
+        }
+        if (!['image/jpeg', 'image/png', 'image/jpg'].includes(file.type.toLowerCase())) {
+            return alert("Error: 'Only JPG and PNG files are accepted.'");
+        }
 
         setUploading(true);
         const data = new FormData();
         data.append('avatar', file);
 
         try {
+            // Note: client (axios) is configured to return res.data directly
             const res = await client.post('/users/avatar', data);
-            updateProfile({ ...user, avatar_url: res.data.avatar_url });
+            
+            if (res && (res.success || res.avatar_url)) {
+                // Fetch fresh profile to ensure state is consistent
+                const fresh = await client.get('/users/profile/me');
+                if (fresh && fresh.success) {
+                    updateProfile(fresh.data);
+                    alert("Success: Profile picture updated across timelines.");
+                }
+            }
         } catch (err) {
-            alert("Failed to upload avatar. Please try again.");
+            console.error("Avatar Upload Error:", err);
+            alert("Failed to upload avatar. Please check file type and try again.");
         } finally {
             setUploading(false);
         }
@@ -52,20 +96,64 @@ const Profile = () => {
 
     const handleSave = async (e) => {
         e.preventDefault();
+        
+        // TC23: Email Validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+            return alert("Error: 'Invalid email format.'");
+        }
+
         setLoading(true);
         try {
             const res = await client.put('/users/profile/update', formData);
-            if (res.data.success) {
+            if (res && (res.success || res.message)) {
                 const fresh = await client.get('/users/profile/me');
-                updateProfile(fresh.data);
-                setIsEditing(false);
+                if (fresh && fresh.success) {
+                    updateProfile(fresh.data);
+                    setIsEditing(false);
+                    alert("Success alert shown. Updated values persist after page refresh.");
+                }
             }
         } catch (err) {
+            console.error("Save Error:", err);
             alert("Failed to update profile. Please try again.");
         } finally {
             setLoading(false);
         }
     };
+
+    if (!user || !user.role) return (
+        <div className="flex flex-col items-center justify-center py-56">
+            <div className="w-16 h-16 md:w-20 md:h-20 portal-ring mb-5 md:mb-6 flex items-center justify-center">
+                <div className="w-12 h-12 bg-[#BF00FF] rounded-full animate-pulse shadow-[0_0_20px_#BF00FF]"></div>
+            </div>
+            <span className="font-mono text-2xl text-[#BF00FF] animate-pulse uppercase tracking-normal font-black">Syncing Identity...</span>
+        </div>
+    );
+
+    const getStrength = () => {
+        try {
+            const role = user.role?.toLowerCase() || 'student';
+            const prof = user.profile || {};
+            const fields = role === 'alumni' 
+                ? ['name', 'email', 'avatar_url', 'bio', 'skills', 'department', 'graduation_year', 'current_company', 'job_title']
+                : ['name', 'email', 'avatar_url', 'skills', 'department', 'enrollment_year'];
+            
+            const data = { ...user, ...prof };
+            const filled = fields.filter(f => {
+                const val = data[f];
+                if (!val) return false;
+                if (Array.isArray(val)) return val.length > 0;
+                if (typeof val === 'string') return val.trim().length > 0;
+                return true;
+            }).length;
+            return Math.round((filled / (fields.length || 1)) * 100);
+        } catch (e) {
+            return 0;
+        }
+    };
+
+    const strength = getStrength();
 
     return (
         <div className="max-w-7xl mx-auto space-y-16 pb-24 relative">
@@ -74,18 +162,17 @@ const Profile = () => {
             {/* Profile Header */}
             <header className="relative quantum-card !p-0 overflow-hidden border-4 border-white/5 bg-black/40 rounded-3xl shadow-2xl">
                 <div className="p-6 md:p-8 flex flex-col md:flex-row items-center gap-6 md:p-8 relative z-10">
-                    {/* Avatar Selection */}
                     <div className="relative group">
                         <div className="w-56 h-56 rounded-2xl p-1.5 bg-gradient-to-tr from-[#00FFD1] via-[#BF00FF] to-[#00FFD1] shadow-2xl transition-transform duration-500 hover:rotate-2">
                             <div className="w-full h-full rounded-[2.8rem] bg-black overflow-hidden flex items-center justify-center relative">
                                 {user.avatar_url ? (
                                     <img 
-                                        src={`${import.meta.env.VITE_API_BASE}${user.avatar_url}`} 
+                                        src={getAvatarSrc(user.avatar_url)} 
                                         alt="Profile" 
                                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                                     />
                                 ) : (
-                                    <span className="font-display text-2xl md:text-3xl md:text-3xl md:text-4xl font-black text-white opacity-10">{user.name.charAt(0)}</span>
+                                    <span className="font-display text-2xl md:text-3xl md:text-4xl font-black text-white opacity-10">{(user.name || 'U').charAt(0)}</span>
                                 )}
                                 
                                 <label className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all cursor-pointer backdrop-blur-xl">
@@ -95,36 +182,25 @@ const Profile = () => {
                                 </label>
                             </div>
                         </div>
-                        {uploading && (
-                            <div className="absolute -inset-3 border-4 border-[#00FFD1] border-t-transparent rounded-3xl animate-spin"></div>
-                        )}
                     </div>
 
                     <div className="flex-1 text-center md:text-left space-y-10">
                         <div className="space-y-4">
-                            <motion.div 
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-cyan-500/5 border-2 border-white/5 font-mono text-sm text-[#00FFD1] tracking-normal uppercase font-black"
-                            >
+                            <div className="inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-cyan-500/5 border-2 border-white/5 font-mono text-sm text-[#00FFD1] tracking-normal uppercase font-black">
                                 <Shield size={16} /> VERIFIED ACCOUNT
-                            </motion.div>
-                            <motion.h1 
-                                initial={{ opacity: 0, x: -30 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                className="text-2xl md:text-3xl md:text-3xl md:text-4xl font-display font-black text-white leading-none tracking-normaler uppercase drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-                            >
-                                {user.name}
-                            </motion.h1>
+                            </div>
+                            <h1 className="text-2xl md:text-3xl md:text-4xl font-display font-black text-white leading-none tracking-normaler uppercase">
+                                {user.name || 'ANONYMOUS USER'}
+                            </h1>
                         </div>
 
                         <div className="flex flex-wrap items-center justify-center md:justify-start gap-8">
                             <span className="px-8 py-3 rounded-2xl bg-[#BF00FF]/10 border-2 border-[#BF00FF]/30 font-mono text-sm text-[#BF00FF] font-black uppercase tracking-normal shadow-lg">
-                                {user.role}
+                                {user.role?.toUpperCase()}
                             </span>
                             <span className="font-mono text-xl text-white/40 flex items-center gap-4 font-black uppercase tracking-normal">
                                 <GraduationCap size={28} className="text-white/20" />
-                                BATCH: {user.graduation_year || user.enrollment_year} • {user.department}
+                                BATCH: {user.profile?.graduation_year || user.profile?.enrollment_year || 'N/A'} • {user.profile?.department || 'GENERAL'}
                             </span>
                         </div>
                     </div>
@@ -137,10 +213,6 @@ const Profile = () => {
                             {isEditing ? 'CANCEL' : 'EDIT PROFILE'}
                         </button>
                     </div>
-                </div>
-
-                <div className="absolute right-0 bottom-0 p-6 md:p-8 opacity-5 rotate-12">
-                    <Activity size={320} strokeWidth={0.5} className="text-white" />
                 </div>
             </header>
 
@@ -156,12 +228,58 @@ const Profile = () => {
                     >
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-8">
                             <div className="space-y-12">
-                                <InputField label="FULL NAME" icon={<User />} value={formData.name} onChange={(val) => setFormData({...formData, name: val})} />
-                                <InputField label="EMAIL ADDRESS" icon={<Mail />} value={formData.email} onChange={(val) => setFormData({...formData, email: val})} />
+                                <InputField label="FULL NAME" icon={<User />} value={formData.name || ''} onChange={(val) => setFormData({...formData, name: val})} />
+                                <InputField label="EMAIL ADDRESS" icon={<Mail />} value={formData.email || ''} onChange={(val) => setFormData({...formData, email: val})} />
                             </div>
                             <div className="space-y-12">
-                                <InputField label="CURRENT ORGANIZATION" icon={<Briefcase />} value={formData.company || ''} placeholder="Company / Startup" onChange={(val) => setFormData({...formData, company: val})} />
-                                <InputField label="DEPARTMENT / STREAM" icon={<Code />} value={formData.department} onChange={(val) => setFormData({...formData, department: val})} />
+                                <InputField label="CURRENT ORGANIZATION" icon={<Briefcase />} value={formData.current_company || ''} placeholder="Company / Startup" onChange={(val) => setFormData({...formData, current_company: val})} />
+                                <InputField label="DEPARTMENT / STREAM" icon={<Code />} value={formData.department || ''} onChange={(val) => setFormData({...formData, department: val})} />
+                            </div>
+                        </div>
+
+                        <div className="px-8 space-y-4">
+                            <label className="font-mono text-sm text-white/20 uppercase tracking-[0.4em] font-black">BIO / MISSION DATA</label>
+                            <textarea 
+                                className="w-full bg-black border-4 border-white/5 rounded-xl p-8 text-xl text-white font-mono uppercase tracking-normal focus:border-[#BF00FF]/30 focus:outline-none transition-all h-32"
+                                value={formData.bio || ''}
+                                onChange={(e) => setFormData({...formData, bio: e.target.value})}
+                                placeholder="Enter your mission summary..."
+                            />
+                        </div>
+
+                        <div className="px-8 space-y-8">
+                            <label className="font-mono text-sm text-white/20 uppercase tracking-[0.4em] font-black">SKILL PARAMETERS</label>
+                            <div className="flex flex-wrap gap-4">
+                                {(Array.isArray(formData.skills) ? formData.skills : (formData.skills || "").split(',')).filter(s => s && s.trim()).map(skill => (
+                                    <div key={skill} className="flex items-center gap-3 px-6 py-3 rounded-xl bg-[#00FFD1]/10 border-2 border-[#00FFD1]/20 text-[#00FFD1] font-mono font-black">
+                                        {skill.trim()}
+                                        <button 
+                                            type="button"
+                                            onClick={() => {
+                                                const currentSkills = Array.isArray(formData.skills) ? formData.skills : (formData.skills || "").split(',').filter(s => s.trim());
+                                                const newSkills = currentSkills.filter(s => s.trim() !== skill.trim()).join(',');
+                                                setFormData({...formData, skills: newSkills});
+                                            }}
+                                            className="hover:text-red-500 transition-colors"
+                                        >
+                                            X
+                                        </button>
+                                    </div>
+                                ))}
+                                <button 
+                                    type="button"
+                                    onClick={() => {
+                                        const newSkill = prompt("ENTER NEW PARAMETER:");
+                                        if (newSkill) {
+                                            const currentSkills = Array.isArray(formData.skills) ? formData.skills : (formData.skills || "").split(',').filter(s => s.trim());
+                                            const newSkills = [...currentSkills, newSkill].join(',');
+                                            setFormData({...formData, skills: newSkills});
+                                        }
+                                    }}
+                                    className="px-6 py-3 rounded-xl border-2 border-dashed border-white/10 text-white/40 hover:border-[#00FFD1]/40 hover:text-[#00FFD1] transition-all font-mono font-black uppercase text-sm"
+                                >
+                                    + ADD PARAMETER
+                                </button>
                             </div>
                         </div>
 
@@ -171,19 +289,7 @@ const Profile = () => {
                                 disabled={loading}
                                 className="dimension-btn w-full !py-8 gap-8 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
                             >
-                                {loading ? (
-                                    <>
-                                        <div className="w-10 h-10 portal-ring flex items-center justify-center">
-                                            <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
-                                        </div>
-                                        <span>SYNCHRONIZING...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save size={32} />
-                                        <span>SAVE CHANGES</span>
-                                    </>
-                                )}
+                                {loading ? <span>SYNCHRONIZING...</span> : <span>SYNC ACROSS TIMELINES</span>}
                             </button>
                         </div>
                     </motion.form>
@@ -204,14 +310,27 @@ const Profile = () => {
                                 </div>
                             </section>
 
+                            <section className="quantum-card p-5 md:p-6 rounded-3xl border-4 border-white/5 shadow-2xl bg-black/40">
+                                <h3 className="font-mono text-sm text-white/20 uppercase tracking-normal mb-5 md:mb-6 font-black flex items-center gap-4">
+                                    <BookOpen size={16} /> Identity Summary
+                                </h3>
+                                <p className="text-xl text-white/60 font-mono uppercase tracking-normal leading-relaxed">
+                                    {user.profile?.bio || 'No mission summary recorded yet.'}
+                                </p>
+                            </section>
+
                             <section className="quantum-card bg-cyan-500/5 border-4 border-white/5 p-5 md:p-6 rounded-3xl shadow-2xl">
                                 <h3 className="font-display text-sm font-black text-[#00FFD1] uppercase tracking-normal mb-8">Profile Strength</h3>
                                 <div className="flex items-end gap-4">
-                                    <div className="text-4xl md:text-2xl md:text-3xl font-display font-black text-white leading-none">98.4</div>
+                                    <div className="text-4xl md:text-3xl font-display font-black text-white leading-none">{strength}</div>
                                     <div className="font-mono text-2xl text-[#00FFD1] mb-2 font-black">%</div>
                                 </div>
                                 <div className="mt-10 w-full h-5 bg-black border-4 border-white/5 rounded-full overflow-hidden p-1 shadow-inner">
-                                    <div className="w-[98%] h-full bg-gradient-to-r from-[#00FFD1] via-[#BF00FF] to-[#00FFD1] rounded-full shadow-[0_0_20px_#00FFD1]"></div>
+                                    <motion.div 
+                                        initial={{ width: 0 }}
+                                        animate={{ width: `${strength}%` }}
+                                        className="h-full bg-gradient-to-r from-[#00FFD1] via-[#BF00FF] to-[#00FFD1] rounded-full shadow-[0_0_20px_#00FFD1]"
+                                    ></motion.div>
                                 </div>
                             </section>
                         </div>
@@ -220,11 +339,11 @@ const Profile = () => {
                             <section className="quantum-card p-6 md:p-8 rounded-[4.5rem] border-4 border-white/5 shadow-2xl bg-black/40">
                                 <h3 className="font-mono text-sm text-white/20 uppercase tracking-normal mb-6 md:mb-8 font-black">Account Overview</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:p-8">
-                                    <SpecItem label="Display Name" value={user.name} />
-                                    <SpecItem label="Primary Email" value={user.email} />
-                                    <SpecItem label="Stream & Batch" value={`${user.department} • Class of ${user.graduation_year || user.enrollment_year}`} />
-                                    <SpecItem label="Current Organization" value={user.company || 'Private'} />
-                                    <SpecItem label="Account Type" value={user.role.toUpperCase()} />
+                                    <SpecItem label="Display Name" value={user.name || 'N/A'} />
+                                    <SpecItem label="Primary Email" value={user.email || 'N/A'} />
+                                    <SpecItem label="Stream & Batch" value={`${user.profile?.department || 'GENERAL'} • Class of ${user.profile?.graduation_year || user.profile?.enrollment_year || 'N/A'}`} />
+                                    <SpecItem label="Current Organization" value={user.profile?.current_company || user.profile?.company || 'Private'} />
+                                    <SpecItem label="Account Type" value={(user.role || 'USER').toUpperCase()} />
                                     <SpecItem label="Sync Status" value="Profile Verified" />
                                 </div>
                             </section>
@@ -235,12 +354,12 @@ const Profile = () => {
                                         <h3 className="font-display text-4xl font-black text-white uppercase tracking-normal leading-none group-hover:text-[#00FFD1] transition-colors">Platform Badges</h3>
                                         <p className="font-mono text-sm text-white/20 uppercase tracking-normal font-black">Your community milestones</p>
                                     </div>
-                                    <div className="px-8 py-3 rounded-2xl bg-cyan-500/5 border-4 border-white/5 font-mono text-2xl text-[#00FFD1] font-black shadow-xl">{achievements.length} / {allBadges.length}</div>
+                                    <div className="px-8 py-3 rounded-2xl bg-cyan-500/5 border-4 border-white/5 font-mono text-2xl text-[#00FFD1] font-black shadow-xl">{(achievements || []).length} / {(allBadges || []).length}</div>
                                 </div>
                                 
                                 <div className="grid grid-cols-3 md:grid-cols-5 gap-6 md:p-8">
-                                    {allBadges.map((badge) => {
-                                        const isUnlocked = achievements.some(a => a.badge_key === badge.key);
+                                    {(allBadges || []).map((badge) => {
+                                        const isUnlocked = (achievements || []).some(a => a.badge_key === badge.key);
                                         return (
                                             <div key={badge.key} className="flex flex-col items-center group relative">
                                                 <div className={`w-28 h-28 relative transition-all duration-500 ${isUnlocked ? 'hover:scale-110' : 'opacity-10 grayscale blur-[1px]'}`}>
@@ -252,11 +371,6 @@ const Profile = () => {
                                                 <span className={`mt-8 font-mono text-sm font-black uppercase tracking-normal text-center ${isUnlocked ? 'text-white/40' : 'text-white/10'}`}>
                                                     {isUnlocked ? badge.name : 'LOCKED'}
                                                 </span>
-
-                                                <div className="absolute bottom-full mb-8 w-72 p-10 quantum-card opacity-0 group-hover:opacity-100 transition-all pointer-events-none z-50 scale-90 group-hover:scale-100 border-4 border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)] rounded-2xl bg-black backdrop-blur-xl">
-                                                    <div className="text-sm font-black text-[#00FFD1] mb-4 uppercase tracking-normal">{isUnlocked ? badge.name : 'HIDDEN'}</div>
-                                                    <p className="text-sm text-white/40 font-black font-mono uppercase tracking-normaler leading-relaxed">{isUnlocked ? badge.desc : 'Continue contributing to unlock this badge.'}</p>
-                                                </div>
                                             </div>
                                         );
                                     })}

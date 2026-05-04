@@ -35,6 +35,25 @@ router.post('/donate', protect, async (req, res) => {
         );
 
         await client.query('COMMIT');
+
+        // 3. Notify Donor
+        await db.query(
+            'INSERT INTO notifications (user_id, type, title, body, reference_id, reference_type) VALUES ($1, $2, $3, $4, $5, $6)',
+            [req.user.id, 'donation', 'CONTRIBUTION SYNCHRONIZED', `Your donation of $${amount} has been received. Thank you for supporting the Nexus!`, campaign_id, 'donation']
+        );
+
+        // 4. Broadcast to Community
+        import('../utils/broadcast.js').then(({ broadcast }) => {
+            broadcast('live_event', {
+                type: 'donation',
+                message: `◈ NEURAL OVERFLOW: ${is_anonymous ? 'Anonymous Entity' : req.user.name} contributed $${amount} to the community fund`,
+                time: new Date()
+            });
+        });
+
+        // 5. Check achievements
+        import('./achievements.js').then(m => m.checkBadges(req.user.id));
+
         res.json({ success: true, message: "Thank you for your donation!" });
     } catch (err) {
         await client.query('ROLLBACK');

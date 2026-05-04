@@ -30,7 +30,7 @@ router.get('/', protect, async (req, res) => {
         let paramCount = 1;
 
         if (search) {
-            query += ` AND (u.name ILIKE $${paramCount} OR ap.current_company ILIKE $${paramCount} OR ap.job_title ILIKE $${paramCount})`;
+            query += ` AND (u.name ILIKE $${paramCount} OR ap.current_company ILIKE $${paramCount} OR ap.job_title ILIKE $${paramCount} OR ap.skills ILIKE $${paramCount})`;
             params.push(`%${search}%`);
             paramCount++;
         }

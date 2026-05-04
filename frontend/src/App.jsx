@@ -20,6 +20,7 @@ import HallOfFame from './pages/HallOfFame';
 import Messaging from './pages/Messaging';
 import Polls from './pages/Polls';
 import ResumeAnalyzer from './pages/ResumeAnalyzer';
+import PublicProfile from './pages/PublicProfile';
 
 import Cursor from './components/Cursor';
 import Layout from './components/Layout';
@@ -43,6 +44,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="profile/:id" element={<PublicProfile />} />
             <Route path="directory" element={<AlumniDirectory />} />
             <Route path="mentorship" element={<Mentorship />} />
             <Route path="jobs" element={<JobBoard />} />

@@ -110,6 +110,9 @@ router.post('/login', async (req, res) => {
             maxAge: 15 * 60 * 1000 // 15 mins
         });
 
+        // Check achievements asynchronously
+        import('./achievements.js').then(m => m.checkBadges(user.id));
+
         res.json({
             success: true,
             token,

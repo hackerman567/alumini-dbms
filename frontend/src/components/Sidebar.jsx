@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { 
     LayoutDashboard, Users, MessageSquare, Briefcase, 
     Calendar, Heart, Bell, ShieldCheck, LogOut, Clock, Trophy, Vote, Cpu,
-    GraduationCap
+    GraduationCap, User
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -19,6 +19,7 @@ const Sidebar = () => {
 
     const menuItems = [
         { name: 'DASHBOARD', path: '/dashboard', icon: LayoutDashboard, color: '#00FFD1', roles: ['student', 'alumni', 'admin', 'faculty', 'mentor'] },
+        { name: 'PROFILE', path: '/profile', icon: User, color: '#00FFD1', roles: ['student', 'alumni', 'admin', 'faculty', 'mentor'] },
         { name: 'ACHIEVEMENTS', path: '/hall-of-fame', icon: Trophy, color: '#FFD700', roles: ['student', 'alumni', 'admin', 'faculty'] },
         { name: 'TIME CAPSULE', path: '/capsule', icon: Clock, color: '#BF00FF', roles: ['student', 'alumni', 'admin', 'faculty'] },
         { name: 'DIRECTORY', path: '/directory', icon: Users, color: '#00BFFF', roles: ['student', 'alumni', 'admin', 'faculty'] },

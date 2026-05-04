@@ -46,8 +46,42 @@ router.get('/profile/me', protect, async (req, res) => {
 });
 
 // @route   PUT /api/v1/users/profile/update
+// @route   PUT /api/v1/users/profile/update
 router.put('/profile/update', protect, async (req, res) => {
-    const { name, bio, skills, department, current_company, job_title, graduation_year, enrollment_year } = req.body;
+    // Handle both flat and nested structures (from frontend { ...user, profile })
+    const body = req.body;
+    const profile = body.profile || {};
+    
+    let name = body.name || profile.name;
+    let bio = body.bio || profile.bio;
+    let skills = body.skills || profile.skills;
+    let department = body.department || profile.department;
+    let current_company = body.current_company || body.company || profile.current_company || profile.company;
+    let job_title = body.job_title || profile.job_title;
+    let graduation_year = body.graduation_year || profile.graduation_year;
+    let enrollment_year = body.enrollment_year || profile.enrollment_year;
+
+    // Data Sanitization & Casting
+    const parseYear = (yr) => {
+        if (!yr) return null;
+        const n = parseInt(yr);
+        return isNaN(n) ? null : n;
+    };
+
+    const gYear = parseYear(graduation_year);
+    const eYear = parseYear(enrollment_year);
+
+    // Normalize skills to array for PostgreSQL
+    let skillArray = null;
+    if (skills !== undefined) {
+        if (Array.isArray(skills)) {
+            skillArray = skills;
+        } else if (typeof skills === 'string') {
+            skillArray = skills.split(',').map(s => s.trim()).filter(s => s !== '');
+        } else {
+            skillArray = [];
+        }
+    }
 
     try {
         // Update basic user info
@@ -65,7 +99,7 @@ router.put('/profile/update', protect, async (req, res) => {
                  job_title = COALESCE($5, job_title),
                  graduation_year = COALESCE($6, graduation_year)
                  WHERE user_id = $7`,
-                [bio, skills, department, current_company, job_title, graduation_year, req.user.id]
+                [bio, skillArray, department, current_company, job_title, gYear, req.user.id]
             );
         } else if (req.user.role === 'student') {
             await db.query(
@@ -74,12 +108,21 @@ router.put('/profile/update', protect, async (req, res) => {
                  department = COALESCE($2, department),
                  enrollment_year = COALESCE($3, enrollment_year)
                  WHERE user_id = $4`,
-                [skills, department, enrollment_year, req.user.id]
+                [skillArray, department, eYear, req.user.id]
             );
+        }
+
+        // Trigger Achievement Check
+        try {
+            const { checkBadges } = await import('./achievements.js');
+            await checkBadges(req.user.id);
+        } catch (badgeErr) {
+            console.error("Badge check failed:", badgeErr);
         }
 
         res.json({ success: true, message: "Profile updated successfully" });
     } catch (err) {
+        console.error("Update Error:", err);
         res.status(500).json({ success: false, error: "Error updating profile" });
     }
 });

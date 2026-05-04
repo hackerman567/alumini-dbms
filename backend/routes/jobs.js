@@ -33,6 +33,9 @@ router.post('/', protect, authorize('alumni', 'admin'), async (req, res) => {
             time: new Date()
         });
 
+        // Check achievements
+        import('./achievements.js').then(m => m.checkBadges(req.user.id));
+
         res.status(201).json({ success: true, data: result.rows[0] });
     } catch (err) {
         res.status(500).json({ success: false, error: "Error posting job" });
@@ -44,13 +47,31 @@ router.post('/:id/apply', protect, authorize('student'), async (req, res) => {
     const { cover_letter } = req.body;
 
     try {
-        // Get user resume_url from profile
+        // 1. Get job poster ID
+        const jobRes = await db.query('SELECT posted_by, title FROM job_postings WHERE id = $1', [req.params.id]);
+        if (jobRes.rows.length === 0) return res.status(404).json({ success: false, error: "Job portal not found" });
+        const job = jobRes.rows[0];
+
+        // 2. Get user resume_url from profile
         const profile = await db.query('SELECT resume_url FROM student_profiles WHERE user_id = $1', [req.user.id]);
         
         await db.query(
             'INSERT INTO job_applications (job_id, applicant_id, cover_letter, resume_url) VALUES ($1, $2, $3, $4)',
             [req.params.id, req.user.id, cover_letter, profile.rows[0]?.resume_url]
         );
+
+        // 3. Notify Alumni
+        await db.query(
+            'INSERT INTO notifications (user_id, type, title, body, reference_id, reference_type) VALUES ($1, $2, $3, $4, $5, $6)',
+            [job.posted_by, 'job_application', 'NEW CANDIDATE DETECTED', `${req.user.name} applied for ${job.title}`, req.params.id, 'job']
+        );
+
+        // 4. Broadcast Event
+        broadcast('live_event', {
+            type: 'application',
+            message: `◈ CANDIDATE TRANSMISSION: ${req.user.name} entered the selection process for ${job.title}`,
+            time: new Date()
+        });
 
         res.json({ success: true, message: "Applied successfully" });
     } catch (err) {

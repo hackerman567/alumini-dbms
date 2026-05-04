@@ -32,6 +32,9 @@ router.post('/request', protect, authorize('student'), async (req, res) => {
             [alumni_id, 'mentorship_request', 'New Mentorship Request', 'A student has requested your mentorship.', result.rows[0].id, 'mentorship_request']
         );
 
+        // Check achievements
+        import('./achievements.js').then(m => m.checkBadges(req.user.id));
+
         res.status(201).json({ success: true, message: "Mentorship request sent successfully." });
     } catch (err) {
         res.status(500).json({ success: false, error: "Error sending request" });
@@ -102,6 +105,9 @@ router.put('/respond/:id', protect, authorize('alumni', 'admin'), async (req, re
             icon: "/favicon.ico",
             url: "/mentorship"
         });
+
+        // Check achievements
+        import('./achievements.js').then(m => m.checkBadges(req.user.id));
 
         res.json({ success: true, message: `Request ${status} successfully.` });
     } catch (err) {

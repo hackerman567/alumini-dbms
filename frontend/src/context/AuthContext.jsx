@@ -44,8 +44,13 @@ export const AuthProvider = ({ children }) => {
         client.post('/auth/logout'); // Clear cookie
     };
 
+    const updateProfile = (newData) => {
+        setUser(newData);
+        localStorage.setItem('user', JSON.stringify(newData));
+    };
+
     return (
-        <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+        <AuthContext.Provider value={{ user, loading, login, logout, updateProfile, isAuthenticated: !!user }}>
             {children}
         </AuthContext.Provider>
     );

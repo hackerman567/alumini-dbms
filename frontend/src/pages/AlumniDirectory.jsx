@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import client from '../api/client';
 import { 
     Search, Filter, Briefcase, GraduationCap, 
@@ -8,6 +9,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 
 const AlumniDirectory = () => {
+    const navigate = useNavigate();
     const [alumni, setAlumni] = useState([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -119,7 +121,11 @@ const AlumniDirectory = () => {
                                     </div>
 
                                     <div className="w-full grid grid-cols-2 gap-6 mt-auto">
-                                        <button className="dimension-btn !p-6 rounded-xl !bg-white/5 !text-white border-4 border-white/10 hover:!text-[#00FFD1] hover:!border-[#00FFD1]/30 transition-all flex items-center justify-center shadow-xl active:scale-95" title="View Profile">
+                                        <button 
+                                            onClick={() => navigate(`/profile/${person.id}`)}
+                                            className="dimension-btn !p-6 rounded-xl !bg-white/5 !text-white border-4 border-white/10 hover:!text-[#00FFD1] hover:!border-[#00FFD1]/30 transition-all flex items-center justify-center shadow-xl active:scale-95" 
+                                            title="View Profile"
+                                        >
                                             <User size={32} />
                                         </button>
                                         <button 

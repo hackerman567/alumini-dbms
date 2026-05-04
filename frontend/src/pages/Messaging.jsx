@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
     Send, User, Search, Phone, Video, MoreVertical, 
-    CheckCheck, Shield, Radio, Terminal, Cpu, Zap
+    CheckCheck, Shield, Radio, Terminal, Cpu, Zap, Lock
 } from 'lucide-react';
 
 const socket = io(import.meta.env.VITE_API_BASE?.replace('/api/v1', '') || 'http://localhost:5000');
@@ -212,6 +212,11 @@ const Messaging = () => {
                                     <div className="flex items-center gap-5">
                                         <div className="w-4 h-4 rounded-full bg-[#00FFD1] animate-pulse shadow-[0_0_15px_#00FFD1]"></div>
                                         <span className="text-sm font-mono text-[#00FFD1] uppercase tracking-normal font-black">Active Now</span>
+                                        <div className="mx-4 w-1.5 h-1.5 bg-white/10 rounded-full"></div>
+                                        <div className="flex items-center gap-3 px-4 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                                            <Lock size={12} className="text-white/30" />
+                                            <span className="text-[10px] font-mono text-white/30 uppercase tracking-[0.2em] font-black">ENCRYPTED SIGNAL</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

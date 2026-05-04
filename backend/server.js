@@ -42,11 +42,37 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:5173',
+    'http://localhost:8080',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:3001',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:8080'
+].filter(Boolean);
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow any localhost or 127.0.0.1 port in development
+        if (!origin || 
+            allowedOrigins.indexOf(origin) !== -1 || 
+            origin.startsWith('http://localhost:') || 
+            origin.startsWith('http://127.0.0.1:')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
 const io = new Server(server, {
-    cors: {
-        origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-        credentials: true
-    }
+    cors: corsOptions
 });
 
 // Initialize broadcast utility
@@ -90,11 +116,10 @@ uploadDirs.forEach(dir => {
 });
 
 // Security Middleware
-app.use(helmet());
-app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-    credentials: true
+app.use(helmet({
+    crossOriginResourcePolicy: false, // For local image serving
 }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 

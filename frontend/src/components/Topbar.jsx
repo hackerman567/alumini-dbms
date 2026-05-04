@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Bell, User, Hexagon, Check, Terminal, Cpu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import client from '../api/client';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Topbar = () => {
     const { user } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
     const [notifications, setNotifications] = useState([]);
     const [showDropdown, setShowDropdown] = useState(false);
@@ -126,7 +127,10 @@ const Topbar = () => {
                     </AnimatePresence>
                 </div>
                 
-                <div className="flex items-center gap-4 md:gap-5 pl-10 border-l-2 border-white/5">
+                <div 
+                    onClick={() => navigate('/profile')}
+                    className="flex items-center gap-4 md:gap-5 pl-10 border-l-2 border-white/5 cursor-pointer group hover:opacity-80 transition-all"
+                >
                     <div className="text-right hidden sm:block">
                         <div className="text-lg font-black text-white font-display tracking-normal uppercase">{user?.name}</div>
                         <div className="text-sm font-mono text-slate-500 uppercase tracking-normal flex items-center justify-end gap-3 font-black mt-1">

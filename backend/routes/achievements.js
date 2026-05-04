@@ -73,16 +73,49 @@ export const checkBadges = async (userId) => {
             await awardBadge(userId, 'TIMELINE_ANCHOR');
         }
 
-        // 3. Check NEXUS_NODE (4 connections as per TC61)
+        // 3. Check NEXUS_NODE (4 connections)
         const mentorships = await db.query("SELECT COUNT(*) FROM mentorship_requests WHERE (alumni_id = $1 OR student_id = $1) AND status = 'accepted'", [userId]);
-        if (parseInt(mentorships.rows[0].count) >= 4) {
+        const acceptedCount = parseInt(mentorships.rows[0].count);
+        if (acceptedCount >= 4) {
             await awardBadge(userId, 'NEXUS_NODE');
         }
         
         // 4. Check SIGNAL_MASTER
         const requests = await db.query("SELECT COUNT(*) FROM mentorship_requests WHERE student_id = $1", [userId]);
-        if (parseInt(requests.rows[0].count) >= 1) { // Award for first request as well
+        if (parseInt(requests.rows[0].count) >= 1) {
             await awardBadge(userId, 'SIGNAL_MASTER');
+        }
+
+        // 5. Check DIMENSION_GUIDE (Mentored 3 students)
+        const mentoredRes = await db.query("SELECT COUNT(*) FROM mentorship_requests WHERE alumni_id = $1 AND status = 'accepted'", [userId]);
+        if (parseInt(mentoredRes.rows[0].count) >= 3) {
+            await awardBadge(userId, 'DIMENSION_GUIDE');
+        }
+
+        // 6. Check ORBIT_VETERAN (Account > 1 year)
+        const userResForDate = await db.query('SELECT created_at FROM users WHERE id = $1', [userId]);
+        const createdAt = new Date(userResForDate.rows[0].created_at);
+        const oneYearAgo = new Date();
+        oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+        if (createdAt <= oneYearAgo) {
+            await awardBadge(userId, 'ORBIT_VETERAN');
+        }
+
+        // 7. Check QUANTUM_SCHOLAR (Jobs in 3 types)
+        const jobTypes = await db.query('SELECT COUNT(DISTINCT type) FROM job_postings WHERE posted_by = $1', [userId]);
+        if (parseInt(jobTypes.rows[0].count) >= 3) {
+            await awardBadge(userId, 'QUANTUM_SCHOLAR');
+        }
+
+        // 8. Check CONSTELLATION_HUB (20 connections)
+        if (acceptedCount >= 20) {
+            await awardBadge(userId, 'CONSTELLATION_HUB');
+        }
+
+        // 9. Check NEXUS_LEGEND (All other badges)
+        const myBadges = await db.query('SELECT COUNT(*) FROM achievements WHERE user_id = $1 AND badge_key != $2', [userId, 'NEXUS_LEGEND']);
+        if (parseInt(myBadges.rows[0].count) >= (BADGES.length - 1)) {
+            await awardBadge(userId, 'NEXUS_LEGEND');
         }
 
     } catch (err) {
