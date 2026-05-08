@@ -6,11 +6,15 @@ import { protect } from '../middleware/auth.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
-webpush.setVapidDetails(
-    'mailto:test@example.com',
-    process.env.VAPID_PUBLIC_KEY,
-    process.env.VAPID_PRIVATE_KEY
-);
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        'mailto:test@example.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn("⚠️ Push Notifications disabled");
+}
 
 // @route   POST /api/v1/push/subscribe
 // @desc    Subscribe user to push notifications
@@ -33,7 +37,7 @@ router.post('/subscribe', protect, async (req, res) => {
 export const sendPushNotification = async (userId, payload) => {
     try {
         const subs = await db.query('SELECT subscription_json FROM push_subscriptions WHERE user_id = $1', [userId]);
-        
+
         const promises = subs.rows.map(sub => {
             return webpush.sendNotification(sub.subscription_json, JSON.stringify(payload)).catch(err => {
                 if (err.statusCode === 404 || err.statusCode === 410) {
