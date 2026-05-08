@@ -133,6 +133,28 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
+// TEMPORARY SEED ROUTE 
+app.get('/api/v1/admin/seed-now', async (req, res) => {
+    try {
+        const db = (await import('./db/index.js')).default;
+        const fs = await import('fs');
+        const path = await import('path');
+        const { fileURLToPath } = await import('url');
+        
+        const __dirname = path.dirname(fileURLToPath(import.meta.url));
+        const schema = fs.readFileSync(path.join(__dirname, 'db/schema.sql'), 'utf8');
+        const seed = fs.readFileSync(path.join(__dirname, 'db/seed.sql'), 'utf8');
+        
+        await db.query(schema);
+        await db.query(seed);
+        
+        res.json({ success: true, message: "DATABASE SYNCHRONIZED AND SEEDED!" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // Static Folders
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -155,27 +177,6 @@ app.use('/api/v1/polls', pollRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
 app.use('/api/v1/search', searchRoutes);
 
-// TEMPORARY SEED ROUTE (Delete after use!)
-app.get('/api/v1/admin/seed-now', async (req, res) => {
-    try {
-        const db = (await import('./db/index.js')).default;
-        const fs = await import('fs');
-        const path = await import('path');
-        const { fileURLToPath } = await import('url');
-        
-        const __dirname = path.dirname(fileURLToPath(import.meta.url));
-        const schema = fs.readFileSync(path.join(__dirname, 'db/schema.sql'), 'utf8');
-        const seed = fs.readFileSync(path.join(__dirname, 'db/seed.sql'), 'utf8');
-        
-        await db.query(schema);
-        await db.query(seed);
-        
-        res.json({ success: true, message: "DATABASE SYNCHRONIZED AND SEEDED!" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
