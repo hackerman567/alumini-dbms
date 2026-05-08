@@ -147,7 +147,14 @@ const pdf = require('pdf-parse');
 import Groq from 'groq-sdk';
 import fs from 'fs';
 
-const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
+let groq = null;
+try {
+    if (process.env.GROQ_API_KEY && process.env.GROQ_API_KEY.length > 5) {
+        groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+    }
+} catch (err) {
+    console.error("AI Initialization skipped:", err.message);
+}
 
 const pdfUpload = multer({ 
     dest: 'uploads/resumes/',
