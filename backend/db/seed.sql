@@ -59,7 +59,7 @@ INSERT INTO poll_options (poll_id, option_text) VALUES
 (2, 'React & Next.js'), (2, 'Machine Learning & AI'), (2, 'Cybersecurity Basics');
 
 -- Time Capsules
-INSERT INTO capsules (creator_id, title, message, unlock_date, is_public, is_revealed) VALUES 
+INSERT INTO capsules (author_id, title, body, unlock_date, is_public, is_revealed) VALUES 
 (3, 'To the Batch of 2030', 'Always keep learning and adapting. The tech world moves fast!', '2030-01-01 00:00:00', true, false),
 (7, 'My Freshman Year', 'Survived the first year! Hoping to get a great internship soon.', '2028-06-01 00:00:00', true, false);
 

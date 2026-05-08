@@ -133,7 +133,7 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// TEMPORARY SEED ROUTE 
+// TEMPORARY SEED ROUTE
 app.get('/api/v1/admin/seed-now', async (req, res) => {
     try {
         const db = (await import('./db/index.js')).default;
