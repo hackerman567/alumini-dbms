@@ -18,7 +18,7 @@ router.post('/', protect, async (req, res) => {
         
         broadcast('live_event', {
             type: 'capsule',
-            message: `◈ TIMELINE ANOMALY: ${req.user.name} sealed a new Time Capsule`,
+            message: `◈ TIMELINE ANOMALY: ${req.user.name || 'An entity'} sealed a new Time Capsule`,
             time: new Date()
         });
 
@@ -27,15 +27,20 @@ router.post('/', protect, async (req, res) => {
         if (badgeCheck.rows.length === 0) {
             await db.query(
                 `INSERT INTO achievements (user_id, badge_key, badge_name, badge_desc) 
-                 VALUES ($1, 'CAPSULE_KEEPER', 'Capsule Keeper', 'Sealed your first Time Capsule.')`,
-                [req.user.id]
+                 VALUES ($1, $2, $3, $4)`,
+                [req.user.id, 'CAPSULE_KEEPER', 'Capsule Keeper', 'Sealed your first Time Capsule.']
             );
         }
 
         res.status(201).json({ success: true, data: result.rows[0] });
     } catch (err) {
-        console.error("Capsule Error:", err);
-        res.status(500).json({ success: false, error: "Error sealing capsule" });
+        console.error("CAPSULE SEAL ERROR:", {
+            error: err.message,
+            stack: err.stack,
+            payload: { title, body, unlock_date, is_public },
+            userId: req.user?.id
+        });
+        res.status(500).json({ success: false, error: "Error sealing capsule", details: err.message });
     }
 });
 
@@ -43,8 +48,18 @@ router.post('/', protect, async (req, res) => {
 // @desc    Get all public capsules (masked if unrevealed)
 router.get('/', protect, async (req, res) => {
     try {
-        // Real-time Reveal Check
-        await db.query('UPDATE capsules SET is_revealed = true WHERE is_revealed = false AND unlock_date <= NOW()');
+        // Real-time Reveal Check & Broadcast
+        const reveals = await db.query('UPDATE capsules SET is_revealed = true WHERE is_revealed = false AND unlock_date <= NOW() RETURNING title');
+        
+        if (reveals.rows.length > 0) {
+            reveals.rows.forEach(c => {
+                broadcast('live_event', {
+                    type: 'capsule_reveal',
+                    message: `◈ TEMPORAL RELEASE: The Time Capsule "${c.title}" has been decrypted and released into the Vault`,
+                    time: new Date()
+                });
+            });
+        }
 
         const result = await db.query(`
             SELECT c.id, c.author_id, c.title, c.unlock_date, c.is_revealed, c.created_at,
@@ -69,9 +84,11 @@ router.get('/me', protect, async (req, res) => {
         await db.query('UPDATE capsules SET is_revealed = true WHERE is_revealed = false AND unlock_date <= NOW()');
 
         const result = await db.query(`
-            SELECT * FROM capsules 
-            WHERE author_id = $1 
-            ORDER BY unlock_date ASC
+            SELECT c.*, u.name as author_name, u.avatar_url as author_avatar 
+            FROM capsules c
+            JOIN users u ON c.author_id = u.id
+            WHERE c.author_id = $1 
+            ORDER BY c.unlock_date ASC
         `, [req.user.id]);
         res.json({ success: true, data: result.rows });
     } catch (err) {

@@ -23,7 +23,7 @@ router.get('/', protect, async (req, res) => {
                    ap.graduation_year, ap.department, ap.skills, ap.is_open_to_mentor
             FROM users u
             JOIN alumni_profiles ap ON u.id = ap.user_id
-            WHERE u.role = 'alumni' AND u.is_active = true
+            WHERE (u.role = 'alumni' OR u.role = 'mentor') AND u.is_active = true
         `;
         
         const params = [];

@@ -8,9 +8,10 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
         title: '',
         company: '',
         location: '',
-        type: 'Full-Time',
+        type: 'full_time',
         salary_range: '',
-        description: ''
+        description: '',
+        is_remote: false
     });
     const [loading, setLoading] = useState(false);
 
@@ -21,7 +22,7 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
             await client.post('/jobs', formData);
             onSuccess();
             onClose();
-            setFormData({ title: '', company: '', location: '', type: 'Full-Time', salary_range: '', description: '' });
+            setFormData({ title: '', company: '', location: '', type: 'full_time', salary_range: '', description: '', is_remote: false });
         } catch (err) {
             alert("Portal Transmission Failed: " + (err.error || "Network Unstable"));
         } finally {
@@ -125,12 +126,22 @@ const PostJobModal = ({ isOpen, onClose, onSuccess }) => {
                                         value={formData.type}
                                         onChange={(e) => setFormData({...formData, type: e.target.value})}
                                     >
-                                        <option value="Full-Time">Full-Time</option>
-                                        <option value="Part-Time">Part-Time</option>
-                                        <option value="Remote">Remote</option>
-                                        <option value="Internship">Internship</option>
+                                        <option value="full_time">Full-Time</option>
+                                        <option value="part_time">Part-Time</option>
+                                        <option value="internship">Internship</option>
+                                        <option value="contract">Contract</option>
                                     </select>
                                 </div>
+                            </div>
+
+                            <div className="flex items-center gap-4 bg-white/[0.03] border border-white/10 rounded-xl py-4 px-6">
+                                <label className="font-mono text-sm text-slate-500 uppercase tracking-normal flex-1">Remote-Enabled Transmission</label>
+                                <input 
+                                    type="checkbox"
+                                    className="w-6 h-6 rounded-lg bg-black border-2 border-white/10 text-[#00FFD1] focus:ring-0 transition-all cursor-pointer"
+                                    checked={formData.is_remote}
+                                    onChange={(e) => setFormData({...formData, is_remote: e.target.checked})}
+                                />
                             </div>
 
                             <div className="space-y-2">

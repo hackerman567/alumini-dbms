@@ -43,7 +43,7 @@ const Events = () => {
                     <h2 className="font-display text-4xl md:text-2xl md:text-3xl font-black text-white mb-4 tracking-normaler uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">Events</h2>
                     <p className="font-mono text-xl text-[#00FFD1] uppercase tracking-normal font-black">{events.length} Professional gatherings scheduled.</p>
                 </div>
-                {(user?.role === 'admin' || user?.role === 'faculty') && (
+                {(user?.role === 'admin' || user?.role === 'faculty' || user?.role === 'alumni' || user?.role === 'mentor') && (
                     <button onClick={() => alert('Event Scheduling Portal is under construction.')} className="dimension-btn flex items-center gap-4 !px-12 !py-8 rounded-xl text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95 transition-all">
                         <Plus size={32} />
                         <span>SCHEDULE EVENT</span>

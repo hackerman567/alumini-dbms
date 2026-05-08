@@ -47,19 +47,21 @@ router.get('/requests', protect, async (req, res) => {
         let query;
         let params = [req.user.id];
 
-        if (req.user.role === 'alumni') {
+        if (req.user.role === 'alumni' || req.user.role === 'mentor') {
             query = `
-                SELECT r.*, u.name as student_name, u.avatar_url as student_avatar
+                SELECT r.*, u.name as student_name, u.avatar_url as student_avatar, sp.enrollment_year as student_batch
                 FROM mentorship_requests r
                 JOIN users u ON r.student_id = u.id
+                LEFT JOIN student_profiles sp ON u.id = sp.user_id
                 WHERE r.alumni_id = $1
                 ORDER BY r.created_at DESC
             `;
         } else {
             query = `
-                SELECT r.*, u.name as mentor_name, u.avatar_url as mentor_avatar
+                SELECT r.*, u.name as mentor_name, u.avatar_url as mentor_avatar, ap.graduation_year as mentor_batch
                 FROM mentorship_requests r
                 JOIN users u ON r.alumni_id = u.id
+                LEFT JOIN alumni_profiles ap ON u.id = ap.user_id
                 WHERE r.student_id = $1
                 ORDER BY r.created_at DESC
             `;
@@ -73,7 +75,7 @@ router.get('/requests', protect, async (req, res) => {
 });
 
 // @route   PUT /api/v1/mentorship/respond/:id
-router.put('/respond/:id', protect, authorize('alumni', 'admin'), async (req, res) => {
+router.put('/respond/:id', protect, authorize('alumni', 'mentor', 'admin'), async (req, res) => {
     const { status, session_notes } = req.body;
 
     try {
@@ -122,7 +124,7 @@ router.get('/mentors', protect, async (req, res) => {
             SELECT u.id, u.name, u.avatar_url, ap.job_title, ap.current_company, ap.skills, ap.department
             FROM users u
             JOIN alumni_profiles ap ON u.id = ap.user_id
-            WHERE u.role = 'alumni'
+            WHERE u.role = 'alumni' OR u.role = 'mentor'
             ORDER BY u.name ASC
         `);
         res.json({ success: true, data: result.rows });

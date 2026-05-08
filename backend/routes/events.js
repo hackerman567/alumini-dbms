@@ -3,6 +3,7 @@ const router = express.Router();
 import db from '../db/index.js';
 import { protect } from '../middleware/auth.js';
 import { authorize } from '../middleware/rbac.js';
+import { broadcast } from '../utils/broadcast.js';
 
 // @route   GET /api/v1/events
 router.get('/', protect, async (req, res) => {
@@ -15,7 +16,7 @@ router.get('/', protect, async (req, res) => {
 });
 
 // @route   POST /api/v1/events
-router.post('/', protect, authorize('admin', 'faculty', 'alumni'), async (req, res) => {
+router.post('/', protect, authorize('admin', 'faculty', 'alumni', 'mentor'), async (req, res) => {
     const { title, description, event_type, venue, meeting_link, start_time, end_time, capacity } = req.body;
 
     try {

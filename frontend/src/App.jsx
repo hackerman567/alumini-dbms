@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -49,13 +49,21 @@ function App() {
             <Route path="mentorship" element={<Mentorship />} />
             <Route path="jobs" element={<JobBoard />} />
             <Route path="events" element={<Events />} />
-            <Route path="donations" element={<Donations />} />
+            <Route path="donations" element={
+              <ProtectedRoute roles={['alumni', 'mentor', 'admin']}>
+                <Donations />
+              </ProtectedRoute>
+            } />
             <Route path="notifications" element={<Notifications />} />
             <Route path="capsule" element={<Capsule />} />
             <Route path="hall-of-fame" element={<HallOfFame />} />
             <Route path="messages" element={<Messaging />} />
             <Route path="polls" element={<Polls />} />
-            <Route path="resume-analyzer" element={<ResumeAnalyzer />} />
+            <Route path="resume-analyzer" element={
+              <ProtectedRoute roles={['student', 'admin']}>
+                <ResumeAnalyzer />
+              </ProtectedRoute>
+            } />
             
             {/* Admin Only */}
             <Route path="admin" element={

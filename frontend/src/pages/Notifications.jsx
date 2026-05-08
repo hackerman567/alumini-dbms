@@ -9,10 +9,12 @@ const Notifications = () => {
 
     const fetchNotifications = async () => {
         try {
+            // Axios interceptor returns response.data directly, so res = { success, data }
             const res = await client.get('/notifications');
-            setNotifications(res.data);
+            setNotifications(res?.data || []);
         } catch (err) {
             console.error("Failed to load notifications", err);
+            setNotifications([]);
         } finally {
             setLoading(false);
         }

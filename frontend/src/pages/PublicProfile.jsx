@@ -22,12 +22,16 @@ const PublicProfile = () => {
                 if (res.success) {
                     setAlumni(res.data);
                     
-                    // Also fetch their achievements
-                    // Note: We need an endpoint for public achievements, or use the one we have
-                    const achRes = await client.get(`/achievements/leaderboard`);
-                    const myAch = achRes.data.find(u => u.id === parseInt(id));
-                    // The leaderboard only gives count, let's assume we show what we have
-                    setAchievements(myAch ? Array(myAch.badge_count).fill({ name: 'Badge' }) : []);
+                    // Also fetch their achievements from leaderboard
+                    try {
+                        const achRes = await client.get('/achievements/leaderboard');
+                        const leaderboard = Array.isArray(achRes?.data) ? achRes.data : [];
+                        const myAch = leaderboard.find(u => u.id === parseInt(id));
+                        setAchievements(myAch ? Array(parseInt(myAch.badge_count) || 0).fill({ name: 'Badge' }) : []);
+                    } catch (achErr) {
+                        console.warn("Could not fetch achievements for this entity", achErr);
+                        setAchievements([]);
+                    }
                 }
             } catch (err) {
                 console.error("Failed to load profile", err);
@@ -47,7 +51,15 @@ const PublicProfile = () => {
         </div>
     );
 
-    if (!alumni) return <div>Identity not found.</div>;
+    if (!alumni) return (
+        <div className="flex flex-col items-center justify-center py-56 text-center">
+            <div className="w-32 h-32 rounded-full border-4 border-dashed border-white/10 flex items-center justify-center mb-8">
+                <span className="font-display text-5xl text-white/10">?</span>
+            </div>
+            <h3 className="font-display text-3xl text-white/20 uppercase tracking-normal font-black mb-4">Identity Not Found</h3>
+            <p className="font-mono text-white/10 text-lg uppercase tracking-normal font-black">This profile does not exist in the nexus.</p>
+        </div>
+    );
 
     return (
         <div className="max-w-7xl mx-auto space-y-16 pb-24 relative">
@@ -68,7 +80,7 @@ const PublicProfile = () => {
                             <div className="w-full h-full rounded-[2.8rem] bg-black overflow-hidden flex items-center justify-center">
                                 {alumni.avatar_url ? (
                                     <img 
-                                        src={`${import.meta.env.VITE_API_BASE}${alumni.avatar_url}`} 
+                                        src={alumni.avatar_url.startsWith('http') ? alumni.avatar_url : `${import.meta.env.VITE_API_BASE || ''}${alumni.avatar_url.startsWith('/') ? '' : '/'}${alumni.avatar_url}`} 
                                         alt="Profile" 
                                         className="w-full h-full object-cover" 
                                     />
@@ -81,10 +93,14 @@ const PublicProfile = () => {
 
                     <div className="flex-1 text-center md:text-left space-y-10">
                         <div className="space-y-4">
-                            <div className="inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-cyan-500/5 border-2 border-white/5 font-mono text-sm text-[#00FFD1] tracking-normal uppercase font-black">
-                                <Shield size={16} /> VERIFIED ALUMNI
+                            <div className={`inline-flex items-center gap-4 px-6 py-2 rounded-xl bg-white/5 border-2 border-white/5 font-mono text-sm tracking-normal uppercase font-black ${
+                                alumni.role === 'mentor' ? 'text-amber-500 border-amber-500/20' : 
+                                alumni.role === 'faculty' ? 'text-blue-500 border-blue-500/20' : 
+                                'text-[#00FFD1] border-[#00FFD1]/20'
+                            }`}>
+                                <Shield size={16} /> {alumni.role} REGISTRY
                             </div>
-                            <h1 className="text-2xl md:text-3xl md:text-3xl md:text-4xl font-display font-black text-white leading-none tracking-normaler uppercase">
+                            <h1 className="text-2xl md:text-3xl lg:text-4xl font-display font-black text-white leading-none tracking-normaler uppercase">
                                 {alumni.name}
                             </h1>
                         </div>

@@ -44,6 +44,7 @@ const StarField = React.memo(() => {
 const Layout = () => {
     const location = useLocation();
     const [events, setEvents] = useState([]);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         socket.on('live_event', (data) => {
@@ -51,6 +52,11 @@ const Layout = () => {
         });
         return () => socket.off('live_event');
     }, []);
+
+    // Close sidebar on route change (mobile)
+    useEffect(() => {
+        setIsSidebarOpen(false);
+    }, [location.pathname]);
 
     useEffect(() => {
         if ('serviceWorker' in navigator && 'PushManager' in window) {
@@ -62,7 +68,6 @@ const Layout = () => {
                         applicationServerKey: import.meta.env.VITE_VAPID_PUBLIC_KEY
                     });
                     
-                    // Send to backend
                     client.post('/push/subscribe', subscription).catch(err => {
                         console.error('Failed to save push subscription', err);
                     });
@@ -72,25 +77,36 @@ const Layout = () => {
     }, []);
 
     return (
-        <div className="flex min-h-screen !cursor-none">
+        <div className="flex min-h-screen">
             <StarField />
-
-            {/* Global Scan Line */}
             <div className="scan-line"></div>
 
-            <Sidebar />
+            {/* Mobile Sidebar Overlay */}
+            <AnimatePresence>
+                {isSidebarOpen && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[110] lg:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
+            <Sidebar isOpen={isSidebarOpen} setIsSidebarOpen={setIsSidebarOpen} />
             
             <div className="flex-1 flex flex-col min-h-screen relative overflow-hidden">
-                <Topbar />
+                <Topbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
                 <main className="flex-1 relative overflow-y-auto custom-scrollbar pb-20">
                     <AnimatePresence mode="wait">
                         <motion.div 
                             key={location.pathname} 
-                            initial={{ opacity: 0, scale: 0.98, filter: 'blur(10px)' }}
-                            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-                            exit={{ opacity: 0, scale: 1.02, filter: 'blur(10px)' }}
-                            transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
-                            className="p-8 lg:p-5 md:p-6"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                            className="p-4 md:p-8 lg:p-10"
                         >
                             <Outlet />
                         </motion.div>

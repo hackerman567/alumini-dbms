@@ -181,12 +181,12 @@ const AdminDashboard = () => {
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y-2 divide-white/5">
-                                            {users.filter(u => u.name.toLowerCase().includes(search.toLowerCase())).map((u) => (
+                                            {users.filter(u => (u.name || '').toLowerCase().includes(search.toLowerCase())).map((u) => (
                                                 <tr key={u.id} className="group hover:bg-white/[0.02] transition-colors duration-300">
                                                     <td className="p-10">
                                                         <div className="flex items-center gap-8">
                                                             <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center font-display text-2xl text-[#00FFD1] border-2 border-white/10 group-hover:border-[#00FFD1]/40 transition-all shadow-xl">
-                                                                {u.name.charAt(0)}
+                                                                {(u.name || '?').charAt(0)}
                                                             </div>
                                                             <div>
                                                                 <div className="text-xl font-black text-white uppercase tracking-normal">{u.name}</div>

@@ -20,12 +20,14 @@ const JobBoard = () => {
         try {
             const [jobsRes, appsRes] = await Promise.all([
                 client.get('/jobs'),
-                user.role === 'student' ? client.get('/jobs/my-applications') : Promise.resolve({ data: { data: [] } })
+                user?.role === 'student' ? client.get('/jobs/my-applications') : Promise.resolve({ data: [] })
             ]);
-            setJobs(jobsRes.data);
-            setMyApps(appsRes.data);
+            setJobs(jobsRes.data || []);
+            // Backend returns array of integer job_ids directly
+            setMyApps(appsRes.data || []);
         } catch (err) {
             console.error("Failed to load jobs", err);
+            setJobs([]);
         } finally {
             setLoading(false);
         }
@@ -59,13 +61,20 @@ const JobBoard = () => {
             'All': 'All',
             'Full-Time': 'full_time',
             'Part-Time': 'part_time',
-            'Remote': 'remote',
-            'Internship': 'internship'
+            'Internship': 'internship',
+            'Contract': 'contract'
         };
         const targetType = typeMap[filters.type];
-        const matchesType = targetType === 'All' || job.type === targetType;
-        const matchesSearch = job.title.toLowerCase().includes(filters.search.toLowerCase()) || 
-                             job.company.toLowerCase().includes(filters.search.toLowerCase());
+        
+        let matchesType = true;
+        if (filters.type === 'Remote') {
+            matchesType = job.is_remote === true;
+        } else if (targetType !== 'All') {
+            matchesType = job.type === targetType;
+        }
+
+        const matchesSearch = (job.title || '').toLowerCase().includes(filters.search.toLowerCase()) || 
+                             (job.company || '').toLowerCase().includes(filters.search.toLowerCase());
         return matchesType && matchesSearch;
     });
 
@@ -79,7 +88,7 @@ const JobBoard = () => {
                     <h2 className="font-display text-4xl md:text-2xl md:text-3xl font-black text-white mb-2 tracking-normaler uppercase leading-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]">Job Board</h2>
                     <p className="font-mono text-xl text-[#00FFD1] uppercase tracking-normal font-black">{filteredJobs.length} Career opportunities detected.</p>
                 </div>
-                {(user.role === 'alumni' || user.role === 'admin') && (
+                {(user?.role === 'alumni' || user?.role === 'admin' || user?.role === 'mentor') && (
                     <button 
                         onClick={() => setShowModal(true)}
                         className="dimension-btn gap-4 !px-12 !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95"
@@ -92,7 +101,7 @@ const JobBoard = () => {
 
             {/* Category Filters */}
             <div className="flex flex-wrap gap-8 items-center bg-black/40 p-6 rounded-2xl border-4 border-white/5 shadow-2xl">
-                {['All', 'Full-Time', 'Part-Time', 'Remote', 'Internship'].map(type => (
+                {['All', 'Full-Time', 'Part-Time', 'Remote', 'Internship', 'Contract'].map(type => (
                     <button
                         key={type}
                         onClick={() => setFilters({ ...filters, type })}
@@ -167,7 +176,7 @@ const JobBoard = () => {
                                             {job.salary_range || 'COMPETITIVE'}
                                         </div>
                                         <div className="flex gap-6">
-                                            {user.role === 'admin' && (
+                                            {user?.role === 'admin' && (
                                                 <button 
                                                     onClick={() => handleDelete(job.id)}
                                                     className="p-5 rounded-[1.5rem] border-4 border-red-500/10 text-red-500/40 hover:bg-red-500/20 hover:text-red-500 transition-all shadow-xl active:scale-95"
@@ -175,7 +184,7 @@ const JobBoard = () => {
                                                     <Trash2 size={28} />
                                                 </button>
                                             )}
-                                            {user.role === 'student' && (
+                                            {user?.role === 'student' && (
                                                 <button 
                                                     onClick={() => !isApplied && handleApply(job.id)}
                                                     disabled={isApplied}

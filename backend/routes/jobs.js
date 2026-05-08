@@ -17,7 +17,7 @@ router.get('/', protect, async (req, res) => {
 import { broadcast } from '../utils/broadcast.js';
 
 // @route   POST /api/v1/jobs
-router.post('/', protect, authorize('alumni', 'admin'), async (req, res) => {
+router.post('/', protect, authorize('alumni', 'mentor', 'admin'), async (req, res) => {
     const { title, company, description, requirements, type, location, is_remote, salary_range, deadline } = req.body;
 
     try {

@@ -9,7 +9,7 @@ const Register = () => {
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         name: '', email: '', password: '', role: 'student',
-        department: '', graduation_year: '', enrollment_year: ''
+        department: '', graduation_year: '', enrollment_year: '', job_title: ''
     });
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -150,7 +150,18 @@ const Register = () => {
                                 <button 
                                     type="button" 
                                     className="dimension-btn w-full !py-8 rounded-2xl flex items-center justify-center gap-6 text-2xl font-black uppercase tracking-normal shadow-2xl active:scale-95 transition-all mt-10" 
-                                    onClick={() => setStep(2)}
+                                    onClick={() => {
+                                        if (!formData.name.trim() || !formData.email.trim() || !formData.password.trim()) {
+                                            setError('Please fill in all fields before proceeding.');
+                                            return;
+                                        }
+                                        if (formData.password.length < 6) {
+                                            setError('Password must be at least 6 characters.');
+                                            return;
+                                        }
+                                        setError('');
+                                        setStep(2);
+                                    }}
                                 >
                                     <span>Proceed</span>
                                     <ArrowRight size={36} />
@@ -180,21 +191,33 @@ const Register = () => {
                                     </select>
                                 </div>
 
-                                {(formData.role === 'alumni' || formData.role === 'mentor') ? (
-                                    <div className="space-y-6">
-                                        <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">
-                                            {formData.role === 'alumni' ? 'Year of Graduation' : 'Professional Background'}
-                                        </label>
-                                        <input 
-                                            className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
-                                            type={formData.role === 'alumni' ? 'number' : 'text'} 
-                                            required 
-                                            placeholder={formData.role === 'alumni' ? 'E.G. 2023' : 'E.G. SENIOR SOFTWARE ENGINEER'}
-                                            value={formData.graduation_year}
-                                            onChange={(e) => setFormData({...formData, graduation_year: e.target.value})}
-                                        />
+                                {(formData.role === 'alumni' || formData.role === 'mentor') && (
+                                    <div className="space-y-12">
+                                        <div className="space-y-6">
+                                            <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Year of Graduation</label>
+                                            <input 
+                                                className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                                type="number" required 
+                                                placeholder="E.G. 2023"
+                                                value={formData.graduation_year}
+                                                onChange={(e) => setFormData({...formData, graduation_year: e.target.value})}
+                                            />
+                                        </div>
+                                        {formData.role === 'mentor' && (
+                                            <div className="space-y-6">
+                                                <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Professional Job Title</label>
+                                                <input 
+                                                    className="w-full bg-black border-4 border-white/5 rounded-2xl py-8 px-10 text-xl text-white font-mono uppercase tracking-normaler focus:border-[#00FFD1]/50 focus:outline-none transition-all placeholder:text-slate-900 shadow-inner"
+                                                    type="text" required 
+                                                    placeholder="E.G. SENIOR SOFTWARE ENGINEER"
+                                                    value={formData.job_title}
+                                                    onChange={(e) => setFormData({...formData, job_title: e.target.value})}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
+                                )}
+                                {formData.role === 'student' && (
                                     <div className="space-y-6">
                                         <label className="font-mono text-sm text-white/20 uppercase tracking-[0.3em] font-black ml-4">Year of Enrollment</label>
                                         <input 

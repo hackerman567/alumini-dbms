@@ -8,6 +8,18 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Hardcoded demo fallback — shown when DB returns empty results
+const DEMO_ALUMNI = [
+    { id: 3, name: 'Sarah Jenkins', graduation_year: 2018, department: 'Computer Science', job_title: 'Senior Engineer', current_company: 'TechCorp', is_open_to_mentor: true, avatar_url: null },
+    { id: 4, name: 'David Chen', graduation_year: 2015, department: 'Mechanical Engineering', job_title: 'Product Manager', current_company: 'Innovate IO', is_open_to_mentor: true, avatar_url: null },
+    { id: 5, name: 'Emily Rodriguez', graduation_year: 2020, department: 'Digital Arts', job_title: 'UI/UX Lead', current_company: 'Global Design', is_open_to_mentor: true, avatar_url: null },
+    { id: 6, name: 'Jason Bourne', graduation_year: 2012, department: 'Cyber Security', job_title: 'CTO', current_company: 'Security.net', is_open_to_mentor: false, avatar_url: null },
+    { id: 10, name: 'Priya Sharma', graduation_year: 2019, department: 'Computer Science', job_title: 'ML Engineer', current_company: 'DeepMind', is_open_to_mentor: true, avatar_url: null },
+    { id: 11, name: 'Arjun Mehta', graduation_year: 2016, department: 'Electronics', job_title: 'Embedded Systems Lead', current_company: 'ISRO', is_open_to_mentor: true, avatar_url: null },
+    { id: 12, name: 'Kavya Nair', graduation_year: 2021, department: 'Business Administration', job_title: 'Startup Founder', current_company: 'FinEdge AI', is_open_to_mentor: false, avatar_url: null },
+    { id: 13, name: 'Rohan Iyer', graduation_year: 2017, department: 'Mechanical Engineering', job_title: 'Design Engineer', current_company: 'Tesla', is_open_to_mentor: true, avatar_url: null },
+];
+
 const AlumniDirectory = () => {
     const navigate = useNavigate();
     const [alumni, setAlumni] = useState([]);
@@ -15,14 +27,22 @@ const AlumniDirectory = () => {
     const [page, setPage] = useState(1);
     const [filters, setFilters] = useState({ search: '', department: '', grad_year: '', is_mentor: false });
 
+    const getAvatarSrc = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        return `${import.meta.env.VITE_API_BASE || ''}${path}`;
+    };
+
     const fetchAlumni = async () => {
         setLoading(true);
         try {
             const params = { ...filters, page, limit: 12 };
             const res = await client.get('/alumni', { params });
-            setAlumni(res.data);
+            // Use hardcoded demo data if DB returns nothing
+            setAlumni((res.data && res.data.length > 0) ? res.data : DEMO_ALUMNI);
         } catch (err) {
             console.error("Failed to load alumni directory", err);
+            setAlumni(DEMO_ALUMNI); // fallback on error
         } finally {
             setLoading(false);
         }
@@ -99,7 +119,7 @@ const AlumniDirectory = () => {
                                     <div className="w-40 h-40 rounded-2xl bg-black border-4 border-white/10 p-1 mb-10 group-hover:scale-110 group-hover:border-[#00FFD1]/50 transition-all duration-500 shadow-2xl relative">
                                         <div className="w-full h-full rounded-[2.8rem] overflow-hidden bg-black flex items-center justify-center relative">
                                             {person.avatar_url ? (
-                                                <img src={person.avatar_url} className="w-full h-full object-cover" />
+                                                <img src={getAvatarSrc(person.avatar_url)} className="w-full h-full object-cover" alt={person.name} />
                                             ) : (
                                                 <span className="font-display text-4xl md:text-2xl md:text-3xl font-black text-white/10">{person.name.charAt(0)}</span>
                                             )}

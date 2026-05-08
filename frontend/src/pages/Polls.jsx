@@ -87,7 +87,7 @@ const Polls = () => {
                     </h1>
                     <p className="font-mono text-xl text-[#00FFD1] tracking-normal uppercase font-black">Share your opinion & shape the community network</p>
                 </div>
-                {(user.role === 'alumni' || user.role === 'admin' || user.role === 'mentor') && (
+                {(user?.role === 'alumni' || user?.role === 'admin' || user?.role === 'mentor') && (
                     <button 
                         onClick={() => setIsModalOpen(true)}
                         className="dimension-btn !px-16 !py-6 text-xl font-black uppercase tracking-normal shadow-2xl active:scale-95"

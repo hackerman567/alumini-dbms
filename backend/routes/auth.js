@@ -10,7 +10,7 @@ dotenv.config();
 // @route   POST /api/v1/auth/register
 // @desc    Register a new user
 router.post('/register', async (req, res) => {
-    const { name, email, password, role, department, graduation_year, enrollment_year } = req.body;
+    const { name, email, password, role, department, graduation_year, enrollment_year, job_title } = req.body;
 
     try {
         // 1. Check if user exists
@@ -32,14 +32,14 @@ router.post('/register', async (req, res) => {
         const userId = newUser.rows[0].id;
 
         // 4. Create Profile based on role
-        if (role === 'alumni') {
-            const gradYear = graduation_year ? parseInt(graduation_year) : null;
+        if (role === 'alumni' || role === 'mentor') {
+            const gradYear = graduation_year ? parseInt(graduation_year) : 0;
             await db.query(
-                'INSERT INTO alumni_profiles (user_id, graduation_year, department) VALUES ($1, $2, $3)',
-                [userId, gradYear, department]
+                'INSERT INTO alumni_profiles (user_id, graduation_year, department, job_title) VALUES ($1, $2, $3, $4)',
+                [userId, gradYear, department, job_title || null]
             );
         } else if (role === 'student') {
-            const enrollYear = enrollment_year ? parseInt(enrollment_year) : null;
+            const enrollYear = enrollment_year ? parseInt(enrollment_year) : 0;
             await db.query(
                 'INSERT INTO student_profiles (user_id, enrollment_year, department) VALUES ($1, $2, $3)',
                 [userId, enrollYear, department]
@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
 
         // 5. Generate Token
         const token = jwt.sign(
-            { id: userId, role: newUser.rows[0].role },
+            { id: userId, role: newUser.rows[0].role, name: newUser.rows[0].name },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
         );
@@ -98,7 +98,7 @@ router.post('/login', async (req, res) => {
         await db.query('UPDATE users SET last_login = NOW() WHERE id = $1', [user.id]);
 
         const token = jwt.sign(
-            { id: user.id, role: user.role },
+            { id: user.id, role: user.role, name: user.name },
             process.env.JWT_SECRET,
             { expiresIn: process.env.JWT_EXPIRES_IN }
         );

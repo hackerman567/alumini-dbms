@@ -20,10 +20,8 @@ const Profile = () => {
     // API URL Resolver for Avatars
     const getAvatarSrc = (path) => {
         if (!path) return null;
-        // If it's already a full URL
         if (path.startsWith('http')) return path;
-        // Use environment variable or default to relative (proxy handled)
-        const base = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
+        const base = import.meta.env.VITE_API_BASE || '';
         return `${base}${path}`;
     };
 
@@ -135,7 +133,7 @@ const Profile = () => {
         try {
             const role = user.role?.toLowerCase() || 'student';
             const prof = user.profile || {};
-            const fields = role === 'alumni' 
+            const fields = (role === 'alumni' || role === 'mentor')
                 ? ['name', 'email', 'avatar_url', 'bio', 'skills', 'department', 'graduation_year', 'current_company', 'job_title']
                 : ['name', 'email', 'avatar_url', 'skills', 'department', 'enrollment_year'];
             

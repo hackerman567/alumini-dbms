@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, setIsSidebarOpen }) => {
     const { user, logout } = useAuth();
     const [time, setTime] = useState(new Date());
 
@@ -26,8 +26,8 @@ const Sidebar = () => {
         { name: 'MENTORSHIP', path: '/mentorship', icon: GraduationCap, color: '#FF8C00', roles: ['student', 'alumni', 'mentor', 'admin'] },
         { name: 'MESSAGES', path: '/messages', icon: MessageSquare, color: '#00FFD1', roles: ['student', 'alumni', 'admin', 'mentor'] },
         { name: 'POLLS', path: '/polls', icon: Vote, color: '#BF00FF', roles: ['student', 'alumni', 'admin', 'faculty'] },
-        { name: 'RESUME ANALYZER', path: '/resume-analyzer', icon: Cpu, color: '#00FFD1', roles: ['student', 'alumni', 'admin'] },
-        { name: 'JOB BOARD', path: '/jobs', icon: Briefcase, color: '#8A2BE2', roles: ['student', 'alumni', 'admin'] },
+        { name: 'RESUME ANALYZER', path: '/resume-analyzer', icon: Cpu, color: '#00FFD1', roles: ['student', 'admin'] },
+        { name: 'JOB BOARD', path: '/jobs', icon: Briefcase, color: '#8A2BE2', roles: ['student', 'alumni', 'admin', 'mentor'] },
         { name: 'EVENTS', path: '/events', icon: Calendar, color: '#FFD700', roles: ['student', 'alumni', 'admin', 'faculty'] },
         { name: 'DONATIONS', path: '/donations', icon: Heart, color: '#FF2D6B', roles: ['alumni', 'admin'] },
         { name: 'NOTIFICATIONS', path: '/notifications', icon: Bell, color: '#00FF7F', roles: ['student', 'alumni', 'admin', 'faculty'] },
@@ -37,7 +37,10 @@ const Sidebar = () => {
     const filteredItems = menuItems.filter(item => item.roles.includes(user?.role));
 
     return (
-        <aside className="w-[300px] h-screen bg-[#050510]/80 backdrop-blur-3xl border-r border-white/5 flex flex-col sticky top-0 z-[100] overflow-hidden shrink-0">
+        <aside className={`
+            fixed lg:sticky top-0 z-[120] h-screen w-72 bg-[#050510]/95 backdrop-blur-3xl border-r border-white/5 flex flex-col transition-transform duration-500
+            ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+        `}>
             {/* Logo Area */}
             <div className="p-10 border-b border-white/5 relative group">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#00FFD1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>

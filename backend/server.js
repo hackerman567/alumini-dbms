@@ -30,6 +30,7 @@ import capsuleRoutes from './routes/capsules.js';
 import achievementsRoutes from './routes/achievements.js';
 import pollRoutes from './routes/polls.js';
 import nexusRoutes from './routes/nexus.js';
+import searchRoutes from './routes/search.js';
 import { startCronJobs } from './cron.js';
 
 import { setIo } from './utils/broadcast.js';
@@ -151,6 +152,7 @@ app.use('/api/v1/capsules', capsuleRoutes);
 app.use('/api/v1/achievements', achievementsRoutes);
 app.use('/api/v1/polls', pollRoutes);
 app.use('/api/v1/nexus', nexusRoutes);
+app.use('/api/v1/search', searchRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
