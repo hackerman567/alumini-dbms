@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const client = axios.create({
-    baseURL: (import.meta.env.VITE_API_URL || '') + '/api/v1',
+    baseURL: (import.meta.env.VITE_API_URL || 'https://alumini-backend-canh.onrender.com') + '/api/v1',
     withCredentials: true
 });
 

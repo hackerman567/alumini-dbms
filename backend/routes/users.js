@@ -147,7 +147,7 @@ const pdf = require('pdf-parse');
 import Groq from 'groq-sdk';
 import fs from 'fs';
 
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
+const groq = process.env.GROQ_API_KEY ? new Groq({ apiKey: process.env.GROQ_API_KEY }) : null;
 
 const pdfUpload = multer({ 
     dest: 'uploads/resumes/',
@@ -184,6 +184,10 @@ router.post('/resume-analyze', protect, pdfUpload.single('resume'), async (req, 
             For recommended_alumni, provide realistic names and roles. 
             Return ONLY the JSON.
         `;
+
+        if (!groq) {
+            return res.status(503).json({ success: false, error: "AI Services currently offline. Please contact administrator." });
+        }
 
         const completion = await groq.chat.completions.create({
             messages: [
