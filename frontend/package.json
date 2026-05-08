@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://hackerman567.github.io/alumni-dbms",
+  "homepage": "https://hackerman567.github.io/alumini-dbms",
   "scripts": {
     "dev": "vite --port 3000",
     "build": "vite build",
