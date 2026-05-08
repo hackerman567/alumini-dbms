@@ -45,6 +45,7 @@ const server = http.createServer(app);
 
 const allowedOrigins = [
     process.env.FRONTEND_URL,
+    'https://hackerman567.github.io',
     'http://localhost:3000',
     'http://localhost:3001',
     'http://localhost:5173',
