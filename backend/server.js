@@ -145,6 +145,9 @@ app.get('/api/v1/admin/seed-now', async (req, res) => {
         const schema = fs.readFileSync(path.join(__dirname, 'db/schema.sql'), 'utf8');
         const seed = fs.readFileSync(path.join(__dirname, 'db/seed.sql'), 'utf8');
         
+        // NUCLEAR RESET: Wipe everything to prevent ID clashes
+        await db.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO public;');
+        
         await db.query(schema);
         await db.query(seed);
         
