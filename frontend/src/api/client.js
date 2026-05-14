@@ -1,9 +1,14 @@
 import axios from 'axios';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://alumini-backend-canh.onrender.com';
+const API_BASE = API_URL + '/api/v1';
+
 const client = axios.create({
-    baseURL: (import.meta.env.VITE_API_URL || 'https://alumini-backend-canh.onrender.com') + '/api/v1',
+    baseURL: API_BASE,
     withCredentials: true
 });
+
+export const getBaseURL = () => API_URL;
 
 // Request Interceptor: Add Token from LocalStorage
 client.interceptors.request.use((config) => {

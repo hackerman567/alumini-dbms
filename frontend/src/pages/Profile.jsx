@@ -21,8 +21,8 @@ const Profile = () => {
     const getAvatarSrc = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        const base = import.meta.env.VITE_API_BASE || '';
-        return `${base}${path}`;
+        const base = import.meta.env.VITE_API_BASE || 'https://alumini-backend-canh.onrender.com';
+        return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
     useEffect(() => {

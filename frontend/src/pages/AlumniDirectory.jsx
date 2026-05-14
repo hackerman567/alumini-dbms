@@ -30,7 +30,8 @@ const AlumniDirectory = () => {
     const getAvatarSrc = (path) => {
         if (!path) return null;
         if (path.startsWith('http')) return path;
-        return `${import.meta.env.VITE_API_BASE || ''}${path}`;
+        const base = import.meta.env.VITE_API_BASE || 'https://alumini-backend-canh.onrender.com';
+        return `${base}${path.startsWith('/') ? '' : '/'}${path}`;
     };
 
     const fetchAlumni = async () => {

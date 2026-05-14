@@ -107,7 +107,7 @@ const Dashboard = () => {
 
                     <div className="relative group w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden border-2 border-white/10 shadow-[0_0_40px_rgba(0,255,209,0.2)]">
                         <img 
-                            src="/alumni_network.png" 
+                            src="alumni_network.png" 
                             alt="Alumni Network Illustration" 
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         />
