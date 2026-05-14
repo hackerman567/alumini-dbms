@@ -80,7 +80,7 @@ const PublicProfile = () => {
                             <div className="w-full h-full rounded-[2.8rem] bg-black overflow-hidden flex items-center justify-center">
                                 {alumni.avatar_url ? (
                                     <img 
-                                        src={alumni.avatar_url.startsWith('http') ? alumni.avatar_url : `${import.meta.env.VITE_API_BASE || ''}${alumni.avatar_url.startsWith('/') ? '' : '/'}${alumni.avatar_url}`} 
+                                        src={alumni.avatar_url.startsWith('http') ? alumni.avatar_url : `${import.meta.env.VITE_API_BASE || 'https://alumini-backend-canh.onrender.com'}${alumni.avatar_url.startsWith('/') ? '' : '/'}${alumni.avatar_url}`} 
                                         alt="Profile" 
                                         className="w-full h-full object-cover" 
                                     />

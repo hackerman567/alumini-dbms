@@ -176,7 +176,7 @@ const MentorCard = ({ mentor, onSendRequest }) => (
             <div className="w-32 h-32 rounded-2xl bg-black border-4 border-white/10 flex items-center justify-center font-display text-3xl md:text-4xl font-black text-white overflow-hidden shadow-2xl group-hover:scale-110 group-hover:border-[#00FFD1]/50 transition-all duration-500">
                 {mentor.avatar_url ? (
                     <img
-                        src={mentor.avatar_url.startsWith('http') ? mentor.avatar_url : `${import.meta.env.VITE_API_BASE || ''}${mentor.avatar_url}`}
+                        src={mentor.avatar_url.startsWith('http') ? mentor.avatar_url : `${import.meta.env.VITE_API_BASE || 'https://alumini-backend-canh.onrender.com'}${mentor.avatar_url}`}
                         className="w-full h-full object-cover"
                         alt={mentor.name}
                     />

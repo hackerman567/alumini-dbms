@@ -262,7 +262,7 @@ const Topbar = ({ onToggleSidebar }) => {
                         <div className="w-16 h-16 rounded-[1.8rem] bg-[#05070a] border-2 border-white/10 relative overflow-hidden flex items-center justify-center p-1 shadow-2xl">
                             {user?.avatar_url ? (
                                 <img 
-                                    src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.VITE_API_BASE || ''}${user.avatar_url}`} 
+                                    src={user.avatar_url.startsWith('http') ? user.avatar_url : `${import.meta.env.VITE_API_BASE || 'https://alumini-backend-canh.onrender.com'}${user.avatar_url}`} 
                                     alt="profile" 
                                     className="w-full h-full object-cover rounded-[1.4rem]" 
                                 />
